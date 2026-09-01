@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ruff_cache/
+.venv/
+venv/
+
+# Node
+node_modules/
+.vite/
+*.log
+yarn-error.log*
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp

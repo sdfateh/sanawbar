@@ -1,0 +1,545 @@
+/*
+ * Sanawbar skin for Frappe Desk
+ *
+ * The palette mirrors Sanawbar's Tailwind preset. Frappe's semantic variables are
+ * deliberately mapped here instead of recolouring individual screens, so
+ * standard forms, lists, workspaces, reports and dialogs share one system and
+ * continue to follow Frappe's Light, Dark and Automatic theme preferences.
+ */
+
+@font-face {
+	font-family: "Noto Kufi Arabic";
+	font-style: normal;
+	font-weight: 100 900;
+	font-display: swap;
+	src: url("/assets/sanawbar/fonts/noto-kufi-arabic/noto-kufi-arabic-arabic.woff2") format("woff2");
+	unicode-range: U+0600-06ff, U+0750-077f, U+0870-0891, U+0897-08ff, U+200c-200e,
+		U+2010-2011, U+204f, U+2e41, U+fb50-fdff, U+fe70-fefc;
+	ascent-override: 104%;
+	descent-override: 46%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Noto Kufi Arabic";
+	font-style: normal;
+	font-weight: 100 900;
+	font-display: swap;
+	src: url("/assets/sanawbar/fonts/noto-kufi-arabic/noto-kufi-arabic-latin-ext.woff2") format("woff2");
+	unicode-range: U+0100-02ba, U+02bd-02ff, U+0304, U+0308, U+0329, U+1d00-1dbf,
+		U+1e00-1e9f, U+1ef2-1eff, U+2020, U+20a0-20c0, U+2113, U+2c60-2c7f,
+		U+a720-a7ff;
+	ascent-override: 104%;
+	descent-override: 46%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: "Noto Kufi Arabic";
+	font-style: normal;
+	font-weight: 100 900;
+	font-display: swap;
+	src: url("/assets/sanawbar/fonts/noto-kufi-arabic/noto-kufi-arabic-latin.woff2") format("woff2");
+	unicode-range: U+0000-00ff, U+0131, U+0152-0153, U+02bb-02bc, U+02c6, U+02da,
+		U+02dc, U+0304, U+0308, U+0329, U+2000-206f, U+20ac, U+2122, U+2191,
+		U+2193, U+2212, U+2215, U+feff, U+fffd;
+	ascent-override: 104%;
+	descent-override: 46%;
+	line-gap-override: 0%;
+}
+
+:root {
+	/* Brand primitives. Frappe continues to own component geometry. */
+	--sanawbar-brand-deep: #0e2419;
+	--sanawbar-brand-deep-hover: #1b4229;
+	--sanawbar-brand-lime: #bedc50;
+	--sanawbar-font-stack: "Noto Kufi Arabic", "InterVariable", "Inter", -apple-system,
+		BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+:root,
+[data-theme="light"] {
+	color-scheme: light;
+
+	/* Sanawbar light tokens. */
+	--sanawbar-bg: #f5f8f4;
+	--sanawbar-surface: #ffffff;
+	--sanawbar-surface-2: #f5f8f4;
+	--sanawbar-surface-3: #e9efe5;
+	--sanawbar-border: #dce4d7;
+	--sanawbar-border-strong: #7c9880;
+	--sanawbar-text: #0e2419;
+	--sanawbar-muted: #55665b;
+	--sanawbar-faint: #7c8d81;
+	--sanawbar-accent: #0e2419;
+	--sanawbar-accent-hover: #1b4229;
+	--sanawbar-accent-fg: #bedc50;
+	--sanawbar-accent-soft: #edf5d5;
+	--sanawbar-accent-soft-fg: #0e2419;
+	--sanawbar-success: #0f7b5f;
+	--sanawbar-success-soft: #e4f4ee;
+	--sanawbar-success-soft-fg: #0a5744;
+	--sanawbar-warning: #b4700a;
+	--sanawbar-warning-soft: #fdf3e2;
+	--sanawbar-warning-soft-fg: #845007;
+	--sanawbar-danger: #c42b2b;
+	--sanawbar-danger-fg: #ffffff;
+	--sanawbar-danger-soft: #fbeaea;
+	--sanawbar-danger-soft-fg: #8f1f1e;
+	--sanawbar-ring: #32855c;
+	--sanawbar-shadow: 14 36 25;
+
+	/* Frappe semantic bridge. */
+	--primary: var(--sanawbar-brand-deep);
+	--brand-color: var(--sanawbar-brand-deep);
+	--primary-color: var(--sanawbar-brand-deep);
+	--btn-primary: var(--sanawbar-brand-deep);
+	--danger: var(--sanawbar-danger);
+	--border-primary: var(--sanawbar-brand-deep);
+	--progress-bar-bg: var(--sanawbar-brand-deep);
+	--date-active-bg: var(--sanawbar-brand-deep);
+	--date-active-text: var(--sanawbar-brand-lime);
+	--checkbox-color: var(--sanawbar-brand-deep);
+	--checkbox-gradient: linear-gradient(
+		180deg,
+		var(--sanawbar-brand-deep) -124.51%,
+		var(--sanawbar-brand-deep) 100%
+	);
+
+	--bg-color: var(--sanawbar-bg);
+	--fg-color: var(--sanawbar-surface);
+	--card-bg: var(--sanawbar-surface);
+	--modal-bg: var(--sanawbar-surface);
+	--toast-bg: var(--sanawbar-surface);
+	--popover-bg: var(--sanawbar-surface);
+	--awesomebar-focus-bg: var(--sanawbar-surface);
+	--awesomplete-hover-bg: var(--sanawbar-accent-soft);
+
+	--subtle-accent: var(--sanawbar-surface-2);
+	--subtle-fg: var(--sanawbar-surface-3);
+	--fg-hover-color: var(--sanawbar-surface-3);
+	--highlight-color: var(--sanawbar-surface-2);
+	--sidebar-select-color: var(--sanawbar-accent-soft);
+	--control-bg: var(--sanawbar-surface-2);
+	--control-bg-on-gray: var(--sanawbar-surface-3);
+	--disabled-control-bg: var(--sanawbar-surface-3);
+	--input-disabled-bg: var(--sanawbar-surface-3);
+	--btn-default-bg: var(--sanawbar-surface-2);
+	--btn-default-hover-bg: var(--sanawbar-surface-3);
+
+	--heading-color: var(--sanawbar-text);
+	--text-neutral: var(--sanawbar-text);
+	--text-color: var(--sanawbar-text);
+	--text-muted: var(--sanawbar-muted);
+	--text-light: var(--sanawbar-faint);
+	--disabled-text-color: var(--sanawbar-faint);
+	--icon-stroke: var(--sanawbar-muted);
+	--icon-fill-bg: var(--sanawbar-surface);
+
+	--border-color: var(--sanawbar-border);
+	--dark-border-color: var(--sanawbar-border-strong);
+	--table-border-color: var(--sanawbar-border);
+	--btn-group-border-color: var(--sanawbar-border);
+	--scrollbar-thumb-color: var(--sanawbar-border-strong);
+	--scrollbar-track-color: var(--sanawbar-surface-3);
+	--switch-bg: var(--sanawbar-border-strong);
+
+	--focus-default: 0 0 0 3px rgb(50 133 92 / 22%);
+	--checkbox-focus-shadow: var(--focus-default);
+	--shadow-xs: 0 1px 2px rgb(var(--sanawbar-shadow) / 5%);
+	--shadow-sm: 0 1px 3px rgb(var(--sanawbar-shadow) / 7%), 0 1px 2px -1px rgb(var(--sanawbar-shadow) / 5%);
+	--shadow-base: 0 4px 12px -2px rgb(var(--sanawbar-shadow) / 9%), 0 2px 4px -2px rgb(var(--sanawbar-shadow) / 5%);
+	--shadow-md: var(--shadow-base);
+	--shadow-lg: 0 12px 32px -8px rgb(var(--sanawbar-shadow) / 16%), 0 4px 8px -4px rgb(var(--sanawbar-shadow) / 8%);
+	--shadow-xl: var(--shadow-lg);
+	--shadow-2xl: var(--shadow-lg);
+	--card-shadow: var(--shadow-xs);
+	--modal-shadow: var(--shadow-lg);
+
+	--alert-text-danger: var(--sanawbar-danger-soft-fg);
+	--alert-bg-danger: var(--sanawbar-danger-soft);
+	--alert-text-warning: var(--sanawbar-warning-soft-fg);
+	--alert-bg-warning: var(--sanawbar-warning-soft);
+	--alert-text-success: var(--sanawbar-success-soft-fg);
+	--alert-bg-success: var(--sanawbar-success-soft);
+	--error-bg: var(--sanawbar-danger-soft);
+	--error-border: var(--sanawbar-danger);
+	--appreciation-color: var(--sanawbar-success-soft-fg);
+	--appreciation-bg: var(--sanawbar-success-soft);
+	--criticism-color: var(--sanawbar-danger-soft-fg);
+	--criticism-bg: var(--sanawbar-danger-soft);
+}
+
+[data-theme="dark"] {
+	color-scheme: dark;
+
+	/* Sanawbar dark tokens. */
+	--sanawbar-bg: #08170f;
+	--sanawbar-surface: #0e2419;
+	--sanawbar-surface-2: #143020;
+	--sanawbar-surface-3: #1b3b28;
+	--sanawbar-border: #20452f;
+	--sanawbar-border-strong: #447459;
+	--sanawbar-text: #e8f2e4;
+	--sanawbar-muted: #9db3a3;
+	--sanawbar-faint: #6e8677;
+	--sanawbar-accent: #46a475;
+	--sanawbar-accent-hover: #57b385;
+	--sanawbar-accent-fg: #0e2419;
+	--sanawbar-accent-soft: #2a3a15;
+	--sanawbar-accent-soft-fg: #cbe568;
+	--sanawbar-success: #2bb98c;
+	--sanawbar-success-soft: #0a3327;
+	--sanawbar-success-soft-fg: #5fd9af;
+	--sanawbar-warning: #e8a33a;
+	--sanawbar-warning-soft: #3a2c0c;
+	--sanawbar-warning-soft-fg: #f3c46c;
+	--sanawbar-danger: #e86060;
+	--sanawbar-danger-fg: #2a0c0c;
+	--sanawbar-danger-soft: #3d1717;
+	--sanawbar-danger-soft-fg: #f0a0a0;
+	--sanawbar-ring: #bedc50;
+	--sanawbar-shadow: 0 0 0;
+
+	--primary: var(--sanawbar-brand-deep);
+	--brand-color: var(--sanawbar-brand-deep);
+	--primary-color: var(--sanawbar-brand-deep);
+	--btn-primary: var(--sanawbar-brand-deep);
+	--danger: var(--sanawbar-danger);
+	--border-primary: var(--sanawbar-brand-deep);
+	--progress-bar-bg: var(--sanawbar-brand-deep);
+	--date-active-bg: var(--sanawbar-brand-deep);
+	--date-active-text: var(--sanawbar-brand-lime);
+	--checkbox-color: var(--sanawbar-brand-deep);
+	--checkbox-gradient: linear-gradient(
+		180deg,
+		var(--sanawbar-brand-deep) -124.51%,
+		var(--sanawbar-brand-deep) 100%
+	);
+
+	--bg-color: var(--sanawbar-bg);
+	--fg-color: var(--sanawbar-surface);
+	--card-bg: var(--sanawbar-surface);
+	--modal-bg: var(--sanawbar-surface);
+	--toast-bg: var(--sanawbar-surface);
+	--popover-bg: var(--sanawbar-surface);
+	--awesomebar-focus-bg: var(--sanawbar-surface);
+	--awesomplete-hover-bg: var(--sanawbar-accent-soft);
+
+	--subtle-accent: var(--sanawbar-surface-2);
+	--subtle-fg: var(--sanawbar-surface-3);
+	--fg-hover-color: var(--sanawbar-surface-3);
+	--highlight-color: var(--sanawbar-surface-2);
+	--sidebar-select-color: var(--sanawbar-accent-soft);
+	--control-bg: var(--sanawbar-surface-2);
+	--control-bg-on-gray: var(--sanawbar-surface-3);
+	--disabled-control-bg: var(--sanawbar-surface-3);
+	--input-disabled-bg: var(--sanawbar-surface-3);
+	--btn-default-bg: var(--sanawbar-surface-2);
+	--btn-default-hover-bg: var(--sanawbar-surface-3);
+
+	--heading-color: var(--sanawbar-text);
+	--text-neutral: var(--sanawbar-text);
+	--text-color: var(--sanawbar-text);
+	--text-muted: var(--sanawbar-muted);
+	--text-light: var(--sanawbar-faint);
+	--text-dark: var(--sanawbar-text);
+	--disabled-text-color: var(--sanawbar-faint);
+	--icon-stroke: var(--sanawbar-muted);
+	--icon-fill-bg: var(--sanawbar-surface);
+
+	--border-color: var(--sanawbar-border);
+	--dark-border-color: var(--sanawbar-border-strong);
+	--table-border-color: var(--sanawbar-border);
+	--btn-group-border-color: var(--sanawbar-border);
+	--scrollbar-thumb-color: var(--sanawbar-border-strong);
+	--scrollbar-track-color: var(--sanawbar-surface-2);
+	--switch-bg: var(--sanawbar-border-strong);
+
+	--focus-default: 0 0 0 3px rgb(190 220 80 / 26%);
+	--checkbox-focus-shadow: var(--focus-default);
+	--shadow-xs: 0 1px 2px rgb(0 0 0 / 18%);
+	--shadow-sm: 0 1px 3px rgb(0 0 0 / 22%), 0 1px 2px -1px rgb(0 0 0 / 18%);
+	--shadow-base: 0 4px 12px -2px rgb(0 0 0 / 30%), 0 2px 4px -2px rgb(0 0 0 / 22%);
+	--shadow-md: var(--shadow-base);
+	--shadow-lg: 0 12px 32px -8px rgb(0 0 0 / 48%), 0 4px 8px -4px rgb(0 0 0 / 32%);
+	--shadow-xl: var(--shadow-lg);
+	--shadow-2xl: var(--shadow-lg);
+	--card-shadow: var(--shadow-xs);
+	--modal-shadow: var(--shadow-lg);
+
+	--alert-text-danger: var(--sanawbar-danger-soft-fg);
+	--alert-bg-danger: var(--sanawbar-danger-soft);
+	--alert-text-warning: var(--sanawbar-warning-soft-fg);
+	--alert-bg-warning: var(--sanawbar-warning-soft);
+	--alert-text-success: var(--sanawbar-success-soft-fg);
+	--alert-bg-success: var(--sanawbar-success-soft);
+	--error-bg: var(--sanawbar-danger-soft);
+	--error-border: var(--sanawbar-danger);
+	--appreciation-color: var(--sanawbar-success-soft-fg);
+	--appreciation-bg: var(--sanawbar-success-soft);
+	--criticism-color: var(--sanawbar-danger-soft-fg);
+	--criticism-bg: var(--sanawbar-danger-soft);
+}
+
+/* -------------------------------------------------------------------------
+ * Visual skin only. Component structure and interaction remain native Frappe.
+ * ---------------------------------------------------------------------- */
+
+/* Sanawbar applications use Noto Kufi for both scripts. Scope it below Desk's
+ * header so Navbar Settings retain the completely native Frappe treatment. */
+#body,
+#body button,
+#body input,
+#body select,
+#body textarea,
+.modal,
+.modal button,
+.modal input,
+.modal select,
+.modal textarea {
+	font-family: var(--sanawbar-font-stack);
+}
+
+::selection {
+	color: var(--sanawbar-text);
+	background: color-mix(in srgb, var(--sanawbar-accent) 22%, transparent);
+}
+
+[data-theme="dark"] .splash img {
+	filter: brightness(0) saturate(100%) invert(87%) sepia(48%) saturate(599%)
+		hue-rotate(24deg) brightness(96%) contrast(87%);
+}
+
+/* Keep Frappe's native centered splash and replace only its image. */
+.splash img {
+	content: url("/assets/sanawbar/images/sanawbar.png");
+	object-fit: contain;
+}
+
+.btn.btn-primary,
+.btn.btn-primary:focus {
+	color: var(--sanawbar-brand-lime);
+	background: var(--sanawbar-brand-deep);
+	--icon-stroke: var(--sanawbar-brand-lime);
+	--icon-fill-bg: var(--sanawbar-brand-deep);
+}
+
+.btn.btn-primary:hover,
+.btn.btn-primary:active {
+	color: var(--sanawbar-brand-lime) !important;
+	background: var(--sanawbar-brand-deep-hover) !important;
+}
+
+/* Checked selection controls use the logo's deep-green/lime pairing instead
+ * of Frappe's hard-coded white (light) or black (dark) checkmark. */
+input[type="checkbox"]:checked:not(:disabled):not(.disabled-selected) {
+	background-color: var(--sanawbar-brand-deep);
+	background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 8 7' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4.00001L2.66667 5.80001L7 1.20001' stroke='%23BEDC50' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"),
+		linear-gradient(180deg, var(--sanawbar-brand-deep), var(--sanawbar-brand-deep));
+	border: none;
+}
+
+input[type="radio"]:checked::before {
+	background-color: var(--sanawbar-brand-deep);
+	box-shadow: inset 0 0 0 2px var(--sanawbar-brand-lime);
+}
+
+input:checked + .slider {
+	background-color: var(--sanawbar-brand-deep);
+}
+
+input:checked + .slider::before {
+	background-color: var(--sanawbar-brand-lime);
+}
+
+/* Sanawbar soft-button treatment for Frappe's document action rail. Native height,
+ * padding, radius and spacing continue to come from page.scss. */
+.page-head .page-actions .btn:not(.btn-primary):not(.btn-danger) {
+	color: var(--sanawbar-muted);
+	background-color: var(--sanawbar-surface-3);
+	border: none;
+	box-shadow: none;
+	--icon-stroke: var(--sanawbar-muted);
+	--icon-fill-bg: var(--sanawbar-surface-3);
+}
+
+.page-head .page-actions .btn:not(.btn-primary):not(.btn-danger):hover,
+.page-head .page-actions .btn:not(.btn-primary):not(.btn-danger):focus-visible {
+	color: var(--sanawbar-accent-soft-fg);
+	background-color: var(--sanawbar-accent-soft);
+	border: none;
+	box-shadow: none;
+	--icon-stroke: var(--sanawbar-accent-soft-fg);
+	--icon-fill-bg: var(--sanawbar-accent-soft);
+}
+
+.page-head .page-actions .btn:not(.btn-primary):not(.btn-danger):active {
+	color: var(--sanawbar-accent-soft-fg) !important;
+	background-color: var(--sanawbar-accent-soft) !important;
+	border: none !important;
+	box-shadow: none !important;
+	--icon-stroke: var(--sanawbar-accent-soft-fg);
+	--icon-fill-bg: var(--sanawbar-accent-soft);
+}
+
+/* Use the same soft-button language for list filters and their text actions. */
+#body .list-sidebar .list-sidebar-button,
+#body .list-sidebar .sidebar-action > a {
+	color: var(--sanawbar-muted);
+	background-color: var(--sanawbar-surface-3);
+	border: none;
+	box-shadow: none;
+	text-decoration: none;
+	--icon-stroke: var(--sanawbar-muted);
+	--icon-fill-bg: var(--sanawbar-surface-3);
+}
+
+#body .list-sidebar .sidebar-action > a {
+	display: inline-flex;
+	padding: 4px 8px;
+	border-radius: var(--border-radius);
+}
+
+#body .list-sidebar .list-sidebar-button:hover,
+#body .list-sidebar .list-sidebar-button:focus-visible,
+#body .list-sidebar .list-sidebar-button[aria-expanded="true"],
+#body .list-sidebar .sidebar-action > a:hover,
+#body .list-sidebar .sidebar-action > a:focus-visible {
+	color: var(--sanawbar-accent-soft-fg);
+	background-color: var(--sanawbar-accent-soft);
+	border: none;
+	box-shadow: none;
+	text-decoration: none;
+	--icon-stroke: var(--sanawbar-accent-soft-fg);
+	--icon-fill-bg: var(--sanawbar-accent-soft);
+}
+
+#body .list-sidebar .list-sidebar-button:active,
+#body .list-sidebar .sidebar-action > a:active {
+	color: var(--sanawbar-accent-soft-fg) !important;
+	background-color: var(--sanawbar-accent-soft) !important;
+	border: none !important;
+	box-shadow: none !important;
+}
+
+/* Preserve native Frappe field surfaces and geometry, but restore Sanawbar's text
+ * hierarchy so forms still belong visually to the Sanawbar system. */
+:root .frappe-control,
+[data-theme="light"] .frappe-control {
+	--control-bg: var(--gray-100);
+	--control-bg-on-gray: var(--gray-200);
+	--disabled-control-bg: var(--gray-50);
+	--input-disabled-bg: var(--gray-200);
+	--heading-color: var(--sanawbar-text);
+	--text-neutral: var(--sanawbar-text);
+	--text-color: var(--sanawbar-text);
+	--text-muted: var(--sanawbar-muted);
+	--text-light: var(--sanawbar-faint);
+	--disabled-text-color: var(--sanawbar-faint);
+	--icon-stroke: var(--sanawbar-muted);
+	--icon-fill-bg: var(--fg-color);
+	--awesomplete-hover-bg: var(--sanawbar-accent-soft);
+	--border-color: var(--gray-200);
+}
+
+[data-theme="dark"] .frappe-control {
+	--control-bg: var(--gray-800);
+	--control-bg-on-gray: var(--gray-800);
+	--disabled-control-bg: var(--gray-800);
+	--input-disabled-bg: none;
+	--heading-color: var(--sanawbar-text);
+	--text-neutral: var(--sanawbar-text);
+	--text-color: var(--sanawbar-text);
+	--text-muted: var(--sanawbar-muted);
+	--text-light: var(--sanawbar-faint);
+	--disabled-text-color: var(--sanawbar-faint);
+	--icon-stroke: var(--sanawbar-muted);
+	--icon-fill-bg: var(--gray-900);
+	--awesomplete-hover-bg: var(--sanawbar-accent-soft);
+	--border-color: var(--gray-800);
+}
+
+.standard-sidebar .standard-sidebar-item.selected,
+.standard-sidebar .standard-sidebar-item:focus-within,
+.desk-sidebar .standard-sidebar-item.selected,
+.desk-sidebar .standard-sidebar-item:focus-within {
+	color: var(--sanawbar-accent-soft-fg);
+	background: var(--sanawbar-accent-soft);
+	--icon-stroke: var(--sanawbar-accent-soft-fg);
+}
+
+.standard-sidebar .standard-sidebar-item.selected > a,
+.desk-sidebar .standard-sidebar-item.selected > a {
+	color: inherit;
+}
+
+.list-row-head,
+.grid-heading-row {
+	color: var(--sanawbar-muted);
+	background: var(--sanawbar-surface-2);
+}
+
+.list-row:hover:not(.list-row-head),
+.grid-row:hover:not(.grid-row-open) .data-row {
+	background: var(--sanawbar-surface-2);
+}
+
+.dropdown-menu .dropdown-item:not(.disabled):not(:disabled):hover,
+.dropdown-menu .dropdown-item:not(.disabled):not(:disabled):focus,
+.dropdown-menu li:not(.disabled) > a:hover,
+.dropdown-menu li:not(.disabled) > a:focus,
+.dropdown-menu li:not(.disabled) > button:hover,
+.dropdown-menu li:not(.disabled) > button:focus,
+.dropdown-list .dropdown-item:not(.disabled):hover,
+.selectable-item:hover,
+.selectable-item.highlighted {
+	color: var(--sanawbar-accent-soft-fg) !important;
+	background-color: var(--sanawbar-accent-soft) !important;
+	--icon-stroke: var(--sanawbar-accent-soft-fg);
+}
+
+/* Link suggestions keep Frappe's native spacing and shape; only the active
+ * state follows the same palette as a selected Desk sidebar entry. Frappe can
+ * render each result as either an li or a div[role="option"]. */
+#body .awesomplete > [role="listbox"] > :is(li, [role="option"]):is(:hover, [aria-selected="true"]),
+.modal .awesomplete > [role="listbox"] > :is(li, [role="option"]):is(:hover, [aria-selected="true"]) {
+	color: var(--sanawbar-accent-soft-fg) !important;
+	background-color: var(--sanawbar-accent-soft) !important;
+}
+
+#body
+	.awesomplete
+	> [role="listbox"]
+	> :is(li, [role="option"]):is(:hover, [aria-selected="true"])
+	.link-option,
+.modal
+	.awesomplete
+	> [role="listbox"]
+	> :is(li, [role="option"]):is(:hover, [aria-selected="true"])
+	.link-option {
+	color: inherit !important;
+}
+
+.progress {
+	background: var(--sanawbar-surface-3);
+}
+
+.progress-bar {
+	background: var(--sanawbar-brand-deep);
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background-color: var(--sanawbar-faint);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		scroll-behavior: auto !important;
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}
