@@ -49,5 +49,12 @@
   "End": "النهاية",
   "The signature control could not be loaded. Upload a signature image instead.": "تعذر تحميل أداة التوقيع. ارفع صورة توقيع بدلاً منها.",
   "The signature image could not be read.": "تعذرت قراءة صورة التوقيع.",
-  "Upload signature image": "رفع صورة التوقيع"
+  "Upload signature image": "رفع صورة التوقيع",
+  "Sentry verification": "التحقق من Sentry",
+  "Temporary deployment diagnostic for {0}.": "أداة تشخيص مؤقتة للنشر لـ {0}.",
+  "This intentionally records a browser error. Remove this page after verification.": "تسجل هذه الصفحة خطأ في المتصفح عمداً. احذفها بعد التحقق.",
+  "Send test error": "إرسال خطأ تجريبي",
+  "The test error was queued and flushed to Sentry.": "تمت إضافة الخطأ التجريبي إلى قائمة الانتظار وإرساله إلى Sentry.",
+  "Event ID": "معرّف الحدث",
+  "Sentry is disabled or the event could not be delivered. Check the bench variables and site telemetry setting.": "Sentry معطل أو تعذر إرسال الحدث. تحقق من متغيرات المنصة وإعداد القياس عن بُعد للموقع."
 }

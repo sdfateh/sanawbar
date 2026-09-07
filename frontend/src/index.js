@@ -10,5 +10,6 @@ export * from "./lib/api";
 export * from "./lib/datetime";
 export * from "./lib/dirtyGuard";
 export * from "./lib/i18n";
+export * from "./lib/sentry";
 export * from "./lib/theme";
 export * from "./lib/useUnsavedChanges";

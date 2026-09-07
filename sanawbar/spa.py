@@ -1,6 +1,7 @@
 """Shared, script-safe bootstrap helpers for Sanawbar React applications."""
 
 import json
+import os
 from pathlib import Path
 
 import frappe
@@ -95,6 +96,45 @@ def user_config():
 		"email": user.email or user.name,
 		"image": user.user_image,
 	}
+
+
+def sentry_config(*, product, dsn_env, release_env):
+	"""Return a browser-safe Sentry bootstrap when site telemetry is enabled."""
+	if not frappe.get_system_settings("enable_telemetry"):
+		return None
+
+	dsn = os.getenv(dsn_env, "").strip()
+	if not dsn:
+		return None
+
+	environment = os.getenv("SENTRY_ENVIRONMENT", "").strip() or (
+		"development" if frappe.conf.developer_mode else "production"
+	)
+	release = os.getenv(release_env, "").strip() or frappe.utils.get_build_version()
+	return {
+		"dsn": dsn,
+		"environment": environment,
+		"release": release,
+		"tenant": frappe.local.site,
+		"product": product,
+	}
+
+
+def sentry_test_requested(route_prefix):
+	"""Return whether the request targets the temporary product test route."""
+	request = getattr(frappe.local, "request", None)
+	path = getattr(request, "path", "")
+	return path.rstrip("/") == "/" + route_prefix.strip("/") + "/sentry-test"
+
+
+def require_sentry_test_access(route_prefix):
+	"""Restrict temporary Sentry diagnostics to authenticated System Managers."""
+	requested = sentry_test_requested(route_prefix)
+	if requested and (
+		frappe.session.user == "Guest" or "System Manager" not in frappe.get_roles()
+	):
+		frappe.throw(frappe._("You do not have permission to run this diagnostic."), frappe.PermissionError)
+	return requested
 
 
 def build_config(app_name, translation_apps, csrf_refresh_path, **flags):
