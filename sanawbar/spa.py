@@ -6,6 +6,7 @@ from pathlib import Path
 
 import frappe
 import frappe.sessions
+from frappe.utils import cint
 
 RTL_LANGUAGES = ("ar", "he", "fa", "ps", "ur", "sy", "dv", "ku")
 
@@ -144,6 +145,10 @@ def build_config(app_name, translation_apps, csrf_refresh_path, **flags):
 		"csrf_token": csrf_token,
 		"csrf_refresh_path": csrf_refresh_path,
 		"app_name": app_name,
+		"realtime": {
+			"enabled": not bool(cint(frappe.conf.get("disable_async"))),
+			"site_name": frappe.local.site,
+		},
 		"user": user_config(),
 		**language_config(translation_apps),
 	}
