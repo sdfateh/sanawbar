@@ -7,7 +7,7 @@ import ConfirmDialog from "./ConfirmDialog";
 import { Button, cx } from "./ui";
 import { clearCache, logout } from "../lib/api";
 import { hasUnsavedChanges, subscribeDirtyGuards } from "../lib/dirtyGuard";
-import { __, getAppConfig, isRTL } from "../lib/i18n";
+import { __, baseLang, getAppConfig, isRTL, setDisplayLanguage, SWITCHABLE_LANGUAGES } from "../lib/i18n";
 import { popoverStyle, usePopoverPosition } from "../lib/popover";
 import { useTheme } from "../lib/theme";
 
@@ -56,6 +56,30 @@ function ThemeToggle() {
 	);
 }
 
+const LANGUAGE_LABELS = { en: "English", ar: "Arabic" };
+
+function LanguageToggle({ onChange }) {
+	return (
+		<div role="radiogroup" aria-label={__("Language")} className="grid grid-cols-2 gap-1 rounded-lg bg-surface-2 p-1">
+			{SWITCHABLE_LANGUAGES.map((value) => (
+				<button
+					key={value}
+					type="button"
+					role="radio"
+					aria-checked={baseLang === value}
+					onClick={() => onChange(value)}
+					className={cx(
+						"flex min-h-11 items-center justify-center rounded-md px-2 text-2xs transition-colors",
+						baseLang === value ? "bg-surface text-content shadow-xs" : "text-content-faint hover:text-content"
+					)}
+				>
+					{__(LANGUAGE_LABELS[value])}
+				</button>
+			))}
+		</div>
+	);
+}
+
 function initials(name) {
 	return String(name || "")
 		.trim()
@@ -92,7 +116,7 @@ function UserAvatar({ user, className }) {
 	);
 }
 
-function ProfileMenu({ deskHref, clearing, loggingOut, onClearCache, onLogout }) {
+function ProfileMenu({ deskHref, clearing, loggingOut, onClearCache, onLanguageChange, onLogout }) {
 	const user = getAppConfig().user || {};
 	const [open, setOpen] = useState(false);
 	const triggerRef = useRef(null);
@@ -179,6 +203,13 @@ function ProfileMenu({ deskHref, clearing, loggingOut, onClearCache, onLogout })
 							<ThemeToggle />
 						</div>
 
+						<div className="border-b border-border px-2 py-3">
+							<p className="mb-2 text-2xs font-medium uppercase tracking-wide text-content-faint">
+								{__("Language")}
+							</p>
+							<LanguageToggle onChange={onLanguageChange} />
+						</div>
+
 						<div className="space-y-1 pt-2">
 							<a
 								href={deskHref}
@@ -252,6 +283,21 @@ export default function AppShell({ brand, links: navLinks = [], deskHref }) {
 			onConfirm: () => {
 				setDiscardPrompt(null);
 				clearConfirmed();
+			},
+			onCancel: () => setDiscardPrompt(null),
+		});
+	}
+
+	function onLanguageChange(language) {
+		if (baseLang === language) return;
+		if (!dirty) {
+			setDisplayLanguage(language);
+			return;
+		}
+		setDiscardPrompt({
+			onConfirm: () => {
+				setDiscardPrompt(null);
+				setDisplayLanguage(language);
 			},
 			onCancel: () => setDiscardPrompt(null),
 		});
@@ -370,6 +416,7 @@ export default function AppShell({ brand, links: navLinks = [], deskHref }) {
 							clearing={clearing}
 							loggingOut={loggingOut}
 							onClearCache={onClearCache}
+							onLanguageChange={onLanguageChange}
 							onLogout={onLogout}
 						/>
 					</div>

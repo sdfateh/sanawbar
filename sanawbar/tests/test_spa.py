@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import frappe
 
-from sanawbar.spa import get_translations, is_rtl, script_safe_json, user_config
+from sanawbar.spa import get_browser_language, get_translations, is_rtl, language_config, script_safe_json, user_config
 
 
 class TestSharedPageBootstrap(unittest.TestCase):
@@ -52,3 +52,11 @@ class TestSharedPageBootstrap(unittest.TestCase):
 	def test_translation_catalogue_supports_regional_codes_and_rejects_paths(self):
 		self.assertEqual(get_translations("ar-JO"), get_translations("ar"))
 		self.assertEqual(get_translations("../ar"), {})
+
+	def test_browser_language_override_is_allowlisted(self):
+		with patch.object(frappe, "request", frappe._dict(cookies={"sanawbar_locale": "ar"})):
+			self.assertEqual(get_browser_language(), "ar")
+			self.assertEqual(language_config()["lang"], "ar")
+
+		with patch.object(frappe, "request", frappe._dict(cookies={"sanawbar_locale": "ar-u-nu-latn"})):
+			self.assertIsNone(get_browser_language())

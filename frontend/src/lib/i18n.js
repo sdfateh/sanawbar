@@ -11,6 +11,9 @@ export function getAppConfig() {
 const config = getAppConfig();
 const messages = config.translations || {};
 
+export const LANGUAGE_PREFERENCE_COOKIE = "sanawbar_locale";
+export const SWITCHABLE_LANGUAGES = ["en", "ar"];
+
 export const lang = String(config.lang || "en").replace(/_/g, "-").toLowerCase();
 export const baseLang = lang.split("-")[0];
 export const direction = config.direction || (baseLang === "ar" ? "rtl" : "ltr");
@@ -39,3 +42,16 @@ export function __(text, args) {
  * ERPNext stores and displays costs that way; only the layout flips.
  */
 export const locale = baseLang === "en" ? undefined : `${lang}-u-nu-latn`;
+
+/** Store a browser-only display preference, then reload the server bootstrap. */
+export function setDisplayLanguage(nextLanguage) {
+	const language = String(nextLanguage || "").toLowerCase();
+	if (!SWITCHABLE_LANGUAGES.includes(language) || typeof document === "undefined") return;
+	const secure = typeof window !== "undefined" && window.location?.protocol === "https:" ? "; Secure" : "";
+	document.cookie = `${LANGUAGE_PREFERENCE_COOKIE}=${encodeURIComponent(language)}; Path=/; Max-Age=31536000; SameSite=Lax${secure}`;
+	if (typeof window !== "undefined") {
+		// AppShell has already obtained confirmation for any unsaved changes.
+		window.__sanawbarSkipUnloadPrompt = true;
+		window.location.reload();
+	}
+}
