@@ -56,11 +56,18 @@ function ThemeToggle() {
 	);
 }
 
-const LANGUAGE_LABELS = { en: "English", ar: "Arabic" };
+const LANGUAGE_LABELS = {
+	en: "English",
+	ar: "Arabic",
+};
 
 function LanguageToggle({ onChange }) {
 	return (
-		<div role="radiogroup" aria-label={__("Language")} className="grid grid-cols-2 gap-1 rounded-lg bg-surface-2 p-1">
+		<div
+			role="radiogroup"
+			aria-label={__("Language")}
+			className="grid grid-cols-2 gap-1 rounded-lg bg-surface-2 p-1"
+		>
 			{SWITCHABLE_LANGUAGES.map((value) => (
 				<button
 					key={value}
@@ -253,7 +260,7 @@ function ProfileMenu({ deskHref, clearing, loggingOut, onClearCache, onLanguageC
 	);
 }
 
-export default function AppShell({ brand, links: navLinks = [], deskHref }) {
+export default function AppShell({ brand, links: navLinks = [], deskHref, footer }) {
 	const [clearing, setClearing] = useState(false);
 	const [loggingOut, setLoggingOut] = useState(false);
 	const [discardPrompt, setDiscardPrompt] = useState(null);
@@ -355,7 +362,7 @@ export default function AppShell({ brand, links: navLinks = [], deskHref }) {
 	}, []);
 
 	return (
-		<div className="min-h-screen bg-bg text-content">
+		<div className="flex min-h-screen flex-col bg-bg text-content">
 			<ConfirmDialog
 				open={Boolean(discardPrompt)}
 				title={discardPrompt?.title}
@@ -366,8 +373,8 @@ export default function AppShell({ brand, links: navLinks = [], deskHref }) {
 				onCancel={discardPrompt?.onCancel}
 			/>
 			<header className="sticky top-0 z-20 border-b border-border bg-surface/85 backdrop-blur-md">
-				<div className="mx-auto flex h-14 max-w-[1440px] items-center gap-3 px-4 sm:px-6">
-					<span className="flex items-center gap-2">
+				<div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-x-3 gap-y-1 px-4 py-1.5 sm:h-14 sm:flex-nowrap sm:px-6 sm:py-0">
+					<span className="flex shrink-0 items-center gap-2">
 						<span className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent text-accent-fg">
 							{BrandIcon ? <BrandIcon size={15} /> : null}
 						</span>
@@ -378,15 +385,16 @@ export default function AppShell({ brand, links: navLinks = [], deskHref }) {
 
 					{/* A single-screen page passes no links; an empty bar would just be
 					    a gap next to the wordmark. */}
-					<nav className={cx("ms-2 items-center gap-0.5", links.length ? "flex" : "hidden")}>
+					<nav className={cx("order-last min-w-0 basis-full items-center gap-0.5 overflow-x-auto sm:order-none sm:ms-2 sm:flex-1 sm:basis-auto", links.length ? "flex" : "hidden")}>
 						{links.map(({ to, href, label, icon: Icon, end }) =>
 							href ? (
 								<a
 									key={href}
 									href={href}
-									className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm text-content-muted transition-colors hover:bg-surface-3 hover:text-content sm:px-3"
+									aria-label={__(label)}
+									className="flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-sm text-content-muted transition-colors hover:bg-surface-3 hover:text-content sm:px-3"
 								>
-									<Icon size={15} />
+									<Icon size={15} aria-hidden="true" />
 									<span className="hidden sm:inline">{__(label)}</span>
 								</a>
 							) : (
@@ -394,38 +402,45 @@ export default function AppShell({ brand, links: navLinks = [], deskHref }) {
 								key={to}
 								to={to}
 								end={end}
+								aria-label={__(label)}
 								className={({ isActive }) =>
 									cx(
-										"flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm transition-colors sm:px-3",
+										"flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-sm transition-colors sm:px-3",
 										isActive
 											? "bg-accent-soft font-medium text-accent-soft-fg"
 											: "text-content-muted hover:bg-surface-3 hover:text-content"
 									)
 								}
 							>
-								<Icon size={15} />
+								<Icon size={15} aria-hidden="true" />
 								<span className="hidden sm:inline">{__(label)}</span>
 							</NavLink>
 							)
 						)}
 					</nav>
 
-					<div className="ms-auto">
+					<div className="ms-auto shrink-0">
 						<ProfileMenu
 							deskHref={deskHref}
-							clearing={clearing}
-							loggingOut={loggingOut}
-							onClearCache={onClearCache}
-							onLanguageChange={onLanguageChange}
-							onLogout={onLogout}
+						clearing={clearing}
+						loggingOut={loggingOut}
+						onClearCache={onClearCache}
+						onLanguageChange={onLanguageChange}
+						onLogout={onLogout}
 						/>
 					</div>
 				</div>
 			</header>
 
-			<main className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6">
+			<main className="mx-auto w-full max-w-[1440px] grow px-4 py-6 sm:px-6">
 				<Outlet />
 			</main>
+
+			{footer ? (
+				<footer className="border-t border-border bg-surface/60 px-4 py-4 text-center text-2xs text-content-faint sm:px-6">
+					<p>{footer}</p>
+				</footer>
+			) : null}
 		</div>
 	);
 }

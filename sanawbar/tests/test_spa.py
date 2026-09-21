@@ -1,15 +1,15 @@
 # Copyright (c) 2026, Salah and contributors
 
 import json
-import unittest
 from unittest.mock import patch
 
 import frappe
+from frappe.tests import IntegrationTestCase
 
 from sanawbar.spa import get_browser_language, get_translations, is_rtl, language_config, script_safe_json, user_config
 
 
-class TestSharedPageBootstrap(unittest.TestCase):
+class TestSharedPageBootstrap(IntegrationTestCase):
 	def test_profile_bootstrap_contains_safe_current_user_data(self):
 		user = frappe._dict(
 			name="operator@example.com",
@@ -53,10 +53,10 @@ class TestSharedPageBootstrap(unittest.TestCase):
 		self.assertEqual(get_translations("ar-JO"), get_translations("ar"))
 		self.assertEqual(get_translations("../ar"), {})
 
-	def test_browser_language_override_is_allowlisted(self):
+	def test_browser_language_override_is_limited_and_user_language_remains_default(self):
 		with patch.object(frappe, "request", frappe._dict(cookies={"sanawbar_locale": "ar"})):
 			self.assertEqual(get_browser_language(), "ar")
 			self.assertEqual(language_config()["lang"], "ar")
 
-		with patch.object(frappe, "request", frappe._dict(cookies={"sanawbar_locale": "ar-u-nu-latn"})):
+		with patch.object(frappe, "request", frappe._dict(cookies={"sanawbar_locale": "../ar"})):
 			self.assertIsNone(get_browser_language())

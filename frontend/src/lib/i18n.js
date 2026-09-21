@@ -43,14 +43,19 @@ export function __(text, args) {
  */
 export const locale = baseLang === "en" ? undefined : `${lang}-u-nu-latn`;
 
-/** Store a browser-only display preference, then reload the server bootstrap. */
+/**
+ * Persist a shared-shell display-language choice for this browser and reload
+ * so Frappe can bootstrap the matching translation catalogue before React
+ * renders. Frappe's User.language remains the fallback when no cookie exists.
+ */
 export function setDisplayLanguage(nextLanguage) {
 	const language = String(nextLanguage || "").toLowerCase();
 	if (!SWITCHABLE_LANGUAGES.includes(language) || typeof document === "undefined") return;
 	const secure = typeof window !== "undefined" && window.location?.protocol === "https:" ? "; Secure" : "";
 	document.cookie = `${LANGUAGE_PREFERENCE_COOKIE}=${encodeURIComponent(language)}; Path=/; Max-Age=31536000; SameSite=Lax${secure}`;
 	if (typeof window !== "undefined") {
-		// AppShell has already obtained confirmation for any unsaved changes.
+		// AppShell has already obtained an explicit discard confirmation when a
+		// form is dirty; avoid showing a second native unload prompt.
 		window.__sanawbarSkipUnloadPrompt = true;
 		window.location.reload();
 	}

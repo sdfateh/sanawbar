@@ -1,7 +1,7 @@
 # Sanawbar
 
 Shared platform services, Arabic-first React components, and the Sanawbar theme
-for Frappe v15 apps.
+for Frappe v16 apps.
 
 The app is the common foundation for the Sanawbar product family. It owns shared
 presentation and Frappe-shell infrastructure today, and may grow shared actions

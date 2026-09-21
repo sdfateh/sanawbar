@@ -8,6 +8,10 @@ import frappe.sessions
 
 RTL_LANGUAGES = ("ar", "he", "fa", "ps", "ur", "sy", "dv", "ku")
 LANGUAGE_PREFERENCE_COOKIE = "sanawbar_locale"
+# The shared shell currently ships complete catalogues and RTL treatment for
+# English and Arabic. Keep the browser override deliberately narrow: a cookie
+# must not make a page advertise a locale for which its application did not
+# supply translations.
 SWITCHABLE_LANGUAGES = frozenset({"ar", "en"})
 
 
@@ -36,7 +40,11 @@ def get_user_lang():
 
 
 def get_browser_language():
-	"""Return a safe shared-shell display override, if one was selected."""
+	"""Return the safe shared-shell override, or ``None`` for the Frappe default.
+
+	This is a presentation preference only. It is not written to the User
+	document and does not affect Frappe Desk or authorization decisions.
+	"""
 	request = getattr(frappe, "request", None)
 	cookies = getattr(request, "cookies", None)
 	value = cookies.get(LANGUAGE_PREFERENCE_COOKIE) if cookies else None
@@ -85,8 +93,9 @@ def get_translations(lang, app_names=("sanawbar",)):
 
 
 def language_config(translation_apps=("sanawbar",)):
-	# User.language stays the default. The profile-menu preference affects only
-	# this browser's SPA presentation, not Desk language or authorization.
+	# Frappe User.language remains the default. A user may deliberately override
+	# it in the shared profile menu for this browser without changing their Desk
+	# language or another user's experience.
 	lang = get_browser_language() or get_user_lang()
 	return {
 		"lang": lang,
