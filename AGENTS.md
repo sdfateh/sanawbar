@@ -45,7 +45,7 @@ own local rules.
 - If a requested shared change conflicts with another consumer, stop and ask
   the user how to resolve the contract. Do not silently regress a consumer,
   fork the shared component, or hide a page-specific workaround in Sanawbar.
-- Before adding a component, search all three repositories for an existing
+- Before adding a component, search all consumer repositories for an existing
   component with substantially the same responsibility. If duplication still
   appears necessary, explain the reuse option and request approval.
 

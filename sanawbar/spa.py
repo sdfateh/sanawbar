@@ -1,10 +1,12 @@
 """Shared, script-safe bootstrap helpers for Sanawbar React applications."""
 
 import json
+import os
 from pathlib import Path
 
 import frappe
 import frappe.sessions
+from frappe.utils import cint
 
 RTL_LANGUAGES = ("ar", "he", "fa", "ps", "ur", "sy", "dv", "ku")
 LANGUAGE_PREFERENCE_COOKIE = "sanawbar_locale"
@@ -119,6 +121,45 @@ def user_config():
 	}
 
 
+def sentry_config(*, product, dsn_env, release_env):
+	"""Return a browser-safe Sentry bootstrap when site telemetry is enabled."""
+	if not frappe.get_system_settings("enable_telemetry"):
+		return None
+
+	dsn = os.getenv(dsn_env, "").strip()
+	if not dsn:
+		return None
+
+	environment = os.getenv("SENTRY_ENVIRONMENT", "").strip() or (
+		"development" if frappe.conf.developer_mode else "production"
+	)
+	release = os.getenv(release_env, "").strip() or frappe.utils.get_build_version()
+	return {
+		"dsn": dsn,
+		"environment": environment,
+		"release": release,
+		"tenant": frappe.local.site,
+		"product": product,
+	}
+
+
+def sentry_test_requested(route_prefix):
+	"""Return whether the request targets the temporary product test route."""
+	request = getattr(frappe.local, "request", None)
+	path = getattr(request, "path", "")
+	return path.rstrip("/") == "/" + route_prefix.strip("/") + "/sentry-test"
+
+
+def require_sentry_test_access(route_prefix):
+	"""Restrict temporary Sentry diagnostics to authenticated System Managers."""
+	requested = sentry_test_requested(route_prefix)
+	if requested and (
+		frappe.session.user == "Guest" or "System Manager" not in frappe.get_roles()
+	):
+		frappe.throw(frappe._("You do not have permission to run this diagnostic."), frappe.PermissionError)
+	return requested
+
+
 def build_config(app_name, translation_apps, csrf_refresh_path, **flags):
 	csrf_token = frappe.sessions.get_csrf_token()
 	frappe.db.commit()  # nosemgrep - token must exist before the page renders
@@ -126,6 +167,10 @@ def build_config(app_name, translation_apps, csrf_refresh_path, **flags):
 		"csrf_token": csrf_token,
 		"csrf_refresh_path": csrf_refresh_path,
 		"app_name": app_name,
+		"realtime": {
+			"enabled": not bool(cint(frappe.conf.get("disable_async"))),
+			"site_name": frappe.local.site,
+		},
 		"user": user_config(),
 		**language_config(translation_apps),
 	}
