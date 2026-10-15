@@ -1,0 +1,9 @@
+{
+ "doctype": "Page",
+ "module": "Sanawbar",
+ "name": "backup-export",
+ "page_name": "backup-export",
+ "title": "Backup export",
+ "standard": "Yes",
+ "roles": [{"role": "Business Data Exporter"}]
+}
