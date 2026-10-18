@@ -339,8 +339,100 @@ class TestDataset(unittest.TestCase):
 		with self.assertRaises(engine.ExportError):
 			MemoryReader(data).collect(["A"])
 		reader = MemoryReader(records())
+		reader.fields = lambda dt: (
+			set(engine.SCHEMA[dt]["fields"]) | ({"custom_dimension"} if dt == "GL Entry" else set())
+		)
 		reader.cursor.fetchall.return_value = [("custom_dimension", "Secret Data")]
+		reader.cursor.fetchone.return_value = ("GL1",)
 		with self.assertRaises(engine.ExportError):
+			reader.collect(["A"])
+
+	def test_unused_accounting_dimension_does_not_block_export(self):
+		data = records()
+		data["GL Entry"].append(
+			{"name": "GL-B", "company": "B", "account": "B-AR", "legacy_dimension": "PRIVATE"}
+		)
+		reader = MemoryReader(data)
+		reader.fields = lambda dt: (
+			set(engine.SCHEMA[dt]["fields"]) | ({"legacy_dimension"} if dt == "GL Entry" else set())
+		)
+		reader.cursor.fetchall.return_value = [("legacy_dimension", "Secret Data")]
+		reader.cursor.fetchone.return_value = None
+		rows = reader.collect(["A"])
+		self.assertEqual(set(rows["GL Entry"]), {"GL1", "GL2"})
+		query, args = reader.cursor.execute.call_args.args
+		self.assertIn("`legacy_dimension` IS NOT NULL", query)
+		self.assertEqual(args, ("GL1", "GL2", ""))
+		self.assertNotIn("legacy_dimension", engine.SCHEMA["GL Entry"]["fields"])
+		reader.cursor.fetchone.return_value = ("GL-B",)
+		with self.assertRaisesRegex(engine.ExportError, "Unsupported accounting dimension: legacy_dimension"):
+			reader.collect(["A", "B"])
+
+	def test_purchase_dimensions_survive_sql_import_and_company_isolation(self):
+		data = records()
+		data["Cost Center"] = [{"name": "CC-A", "company": "A"}]
+		data["Project"] = [{"name": "P-A", "company": "A"}]
+		data["Purchase Order"] = [
+			{"name": "PO-A", "company": "A", "branch": "BA", "project": "P-A", "cost_center": "CC-A"},
+			{"name": "PO-B", "company": "B", "branch": "BB"},
+		]
+		data["Purchase Order Item"] = [
+			{
+				"name": "PO-LINE-A",
+				"parent": "PO-A",
+				"parenttype": "Purchase Order",
+				"parentfield": "items",
+				"branch": "BA",
+			},
+			{
+				"name": "PO-LINE-B",
+				"parent": "PO-B",
+				"parenttype": "Purchase Order",
+				"parentfield": "items",
+				"branch": "BB",
+			},
+		]
+		reader = MemoryReader(data)
+		reader.cursor.fetchall.return_value = [
+			("branch", "Branch"),
+			("project", "Project"),
+			("cost_center", "Cost Center"),
+		]
+		rows = reader.collect(["A"])
+		self.assertEqual(set(rows["Purchase Order Item"]), {"PO-LINE-A"})
+		with tempfile.TemporaryDirectory() as directory:
+			engine.write_package(directory, rows, "2026-10-18T00:00:00Z", ["A"])
+			with sqlite3.connect(":memory:") as conn:
+				conn.executescript((Path(directory) / "business-data.sql").read_text())
+				for dt, name in [("Purchase Order", "PO-A"), ("Purchase Order Item", "PO-LINE-A")]:
+					table = engine.SCHEMA[dt]["table"]
+					branch = engine.column_name(dt, "branch")
+					self.assertEqual(
+						conn.execute(f'SELECT "{branch}" FROM "{table}" WHERE id=?', (name,)).fetchone(),
+						("BA",),
+					)
+				for field, expected in [("project", "P-A"), ("cost_center", "CC-A")]:
+					col = engine.column_name("Purchase Order", field)
+					table = engine.SCHEMA["Purchase Order"]["table"]
+					self.assertEqual(conn.execute(f'SELECT "{col}" FROM "{table}"').fetchone(), (expected,))
+
+	def test_dimension_definition_without_source_column_is_unused(self):
+		reader = MemoryReader(records())
+		reader.cursor.fetchall.return_value = [("removed_dimension", "Secret Data")]
+		reader.collect(["A"])
+		reader.cursor.fetchone.assert_not_called()
+
+	def test_dimension_rejects_a_different_target_even_for_an_allowed_field(self):
+		reader = MemoryReader(records())
+		reader.cursor.fetchall.return_value = [("branch", "Secret Data")]
+		reader.cursor.fetchone.return_value = ("INV-A",)
+		with self.assertRaisesRegex(engine.ExportError, "Unsupported accounting dimension: branch"):
+			reader.collect(["A"])
+
+	def test_dimension_query_identifiers_are_validated(self):
+		reader = MemoryReader(records())
+		reader.cursor.fetchall.return_value = [("dimension` OR 1=1", "Secret Data")]
+		with self.assertRaisesRegex(engine.ExportError, "Unsupported accounting dimension field"):
 			reader.collect(["A"])
 
 	def test_deleted_reference_is_reported_and_not_synthesized(self):

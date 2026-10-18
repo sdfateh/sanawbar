@@ -8,7 +8,7 @@ import zipfile
 from decimal import Decimal, localcontext
 from pathlib import Path
 
-VERSION = 6
+VERSION = 7
 SCHEMA = json.loads(Path(__file__).with_name("schema.json").read_text())
 
 
