@@ -435,7 +435,9 @@
       "purchase_receipt",
       "disposal_date",
       "journal_entry_for_scrap",
-      "cost_center"
+      "cost_center",
+      "branch",
+      "project"
     ],
     "child": false,
     "company_scoped": true,
@@ -444,7 +446,9 @@
       "company": "Company",
       "cost_center": "Cost Center",
       "purchase_receipt": "Purchase Receipt",
-      "purchase_invoice": "Purchase Invoice"
+      "purchase_invoice": "Purchase Invoice",
+      "branch": "Branch",
+      "project": "Project"
     },
     "parents": [],
     "columns": [
@@ -463,7 +467,9 @@
       "pur_rcpt",
       "disposal_dt",
       "jrn_entry",
-      "cost_ctr"
+      "cost_ctr",
+      "branch",
+      "proj"
     ],
     "reference_originals_column": "raw_refs"
   },
@@ -1230,7 +1236,10 @@
       "total_outgoing_value",
       "value_difference",
       "total_additional_costs",
-      "amended_from"
+      "amended_from",
+      "branch",
+      "project",
+      "cost_center"
     ],
     "child": false,
     "company_scoped": true,
@@ -1238,7 +1247,10 @@
       "company": "Company",
       "from_warehouse": "Warehouse",
       "to_warehouse": "Warehouse",
-      "amended_from": "Stock Entry"
+      "amended_from": "Stock Entry",
+      "branch": "Branch",
+      "project": "Project",
+      "cost_center": "Cost Center"
     },
     "parents": [],
     "columns": [
@@ -1255,7 +1267,10 @@
       "total_outgoing_val",
       "val_diff",
       "total_addl_cost",
-      "amend_from"
+      "amend_from",
+      "branch",
+      "proj",
+      "cost_ctr"
     ],
     "reference_originals_column": "raw_refs"
   },
@@ -1271,7 +1286,9 @@
       "expense_account",
       "difference_amount",
       "cost_center",
-      "amended_from"
+      "amended_from",
+      "branch",
+      "project"
     ],
     "child": false,
     "company_scoped": true,
@@ -1279,7 +1296,9 @@
       "company": "Company",
       "expense_account": "Account",
       "cost_center": "Cost Center",
-      "amended_from": "Stock Reconciliation"
+      "amended_from": "Stock Reconciliation",
+      "branch": "Branch",
+      "project": "Project"
     },
     "parents": [],
     "columns": [
@@ -1292,7 +1311,9 @@
       "expn_acct",
       "diff_amt",
       "cost_ctr",
-      "amend_from"
+      "amend_from",
+      "branch",
+      "proj"
     ],
     "reference_originals_column": "raw_refs"
   },
@@ -1315,7 +1336,10 @@
       "net_total",
       "base_net_total",
       "grand_total",
-      "base_grand_total"
+      "base_grand_total",
+      "branch",
+      "project",
+      "cost_center"
     ],
     "child": false,
     "company_scoped": true,
@@ -1324,7 +1348,10 @@
       "amended_from": "Delivery Note",
       "company": "Company",
       "return_against": "Delivery Note",
-      "currency": "Currency"
+      "currency": "Currency",
+      "branch": "Branch",
+      "project": "Project",
+      "cost_center": "Cost Center"
     },
     "parents": [],
     "columns": [
@@ -1344,7 +1371,10 @@
       "net_total",
       "base_net_total",
       "grand_amt",
-      "base_grand_amt"
+      "base_grand_amt",
+      "branch",
+      "proj",
+      "cost_ctr"
     ],
     "reference_originals_column": "raw_refs"
   },
@@ -1367,7 +1397,10 @@
       "net_total",
       "base_net_total",
       "grand_total",
-      "base_grand_total"
+      "base_grand_total",
+      "branch",
+      "project",
+      "cost_center"
     ],
     "child": false,
     "company_scoped": true,
@@ -1376,7 +1409,10 @@
       "company": "Company",
       "return_against": "Purchase Receipt",
       "currency": "Currency",
-      "amended_from": "Purchase Receipt"
+      "amended_from": "Purchase Receipt",
+      "branch": "Branch",
+      "project": "Project",
+      "cost_center": "Cost Center"
     },
     "parents": [],
     "columns": [
@@ -1396,7 +1432,10 @@
       "net_total",
       "base_net_total",
       "grand_amt",
-      "base_grand_amt"
+      "base_grand_amt",
+      "branch",
+      "proj",
+      "cost_ctr"
     ],
     "reference_originals_column": "raw_refs"
   },
@@ -1419,7 +1458,10 @@
       "base_net_total",
       "grand_total",
       "base_grand_total",
-      "advance_paid"
+      "advance_paid",
+      "branch",
+      "project",
+      "cost_center"
     ],
     "child": false,
     "company_scoped": true,
@@ -1427,7 +1469,10 @@
       "customer": "Customer",
       "amended_from": "Sales Order",
       "company": "Company",
-      "currency": "Currency"
+      "currency": "Currency",
+      "branch": "Branch",
+      "project": "Project",
+      "cost_center": "Cost Center"
     },
     "parents": [],
     "columns": [
@@ -1447,7 +1492,10 @@
       "base_net_total",
       "grand_amt",
       "base_grand_amt",
-      "adv_paid"
+      "adv_paid",
+      "branch",
+      "proj",
+      "cost_ctr"
     ],
     "reference_originals_column": "raw_refs"
   },
@@ -1470,7 +1518,10 @@
       "base_net_total",
       "grand_total",
       "base_grand_total",
-      "advance_paid"
+      "advance_paid",
+      "branch",
+      "project",
+      "cost_center"
     ],
     "child": false,
     "company_scoped": true,
@@ -1478,7 +1529,10 @@
       "supplier": "Supplier",
       "company": "Company",
       "amended_from": "Purchase Order",
-      "currency": "Currency"
+      "currency": "Currency",
+      "branch": "Branch",
+      "project": "Project",
+      "cost_center": "Cost Center"
     },
     "parents": [],
     "columns": [
@@ -1498,7 +1552,10 @@
       "base_net_total",
       "grand_amt",
       "base_grand_amt",
-      "adv_paid"
+      "adv_paid",
+      "branch",
+      "proj",
+      "cost_ctr"
     ],
     "reference_originals_column": "raw_refs"
   },
@@ -2027,13 +2084,17 @@
       "tax_amount",
       "total",
       "base_tax_amount",
-      "base_total"
+      "base_total",
+      "branch",
+      "project"
     ],
     "child": true,
     "company_scoped": false,
     "links": {
       "account_head": "Account",
-      "cost_center": "Cost Center"
+      "cost_center": "Cost Center",
+      "branch": "Branch",
+      "project": "Project"
     },
     "parents": [
       [
@@ -2059,7 +2120,9 @@
       "tax_amt",
       "total",
       "base_tax_amt",
-      "base_total"
+      "base_total",
+      "branch",
+      "proj"
     ],
     "reference_originals_column": "raw_refs"
   },
@@ -2139,13 +2202,17 @@
       "cost_center",
       "amount",
       "description",
-      "is_exchange_gain_loss"
+      "is_exchange_gain_loss",
+      "branch",
+      "project"
     ],
     "child": true,
     "company_scoped": false,
     "links": {
       "account": "Account",
-      "cost_center": "Cost Center"
+      "cost_center": "Cost Center",
+      "branch": "Branch",
+      "project": "Project"
     },
     "parents": [
       [
@@ -2164,7 +2231,9 @@
       "cost_ctr",
       "amt",
       "details",
-      "is_exch_gain_loss"
+      "is_exch_gain_loss",
+      "branch",
+      "proj"
     ],
     "reference_originals_column": "raw_refs"
   },
@@ -2675,7 +2744,8 @@
       "against_sales_order",
       "so_detail",
       "against_sales_invoice",
-      "si_detail"
+      "si_detail",
+      "branch"
     ],
     "child": true,
     "company_scoped": false,
@@ -2690,7 +2760,8 @@
       "against_sales_invoice": "Sales Invoice",
       "project": "Project",
       "so_detail": "Sales Order Item",
-      "si_detail": "Sales Invoice Item"
+      "si_detail": "Sales Invoice Item",
+      "branch": "Branch"
     },
     "parents": [
       [
@@ -2728,7 +2799,8 @@
       "against_sales_order",
       "so_line",
       "against_sales_inv",
-      "si_line"
+      "si_line",
+      "branch"
     ],
     "reference_originals_column": "raw_refs"
   },
@@ -2764,7 +2836,8 @@
       "purchase_order",
       "purchase_order_item",
       "purchase_invoice",
-      "purchase_invoice_item"
+      "purchase_invoice_item",
+      "branch"
     ],
     "child": true,
     "company_scoped": false,
@@ -2779,7 +2852,8 @@
       "expense_account": "Account",
       "purchase_invoice": "Purchase Invoice",
       "purchase_order_item": "Purchase Order Item",
-      "purchase_invoice_item": "Purchase Invoice Item"
+      "purchase_invoice_item": "Purchase Invoice Item",
+      "branch": "Branch"
     },
     "parents": [
       [
@@ -2817,7 +2891,8 @@
       "pur_order",
       "pur_order_item",
       "pur_inv",
-      "pur_inv_item"
+      "pur_inv_item",
+      "branch"
     ],
     "reference_originals_column": "raw_refs"
   },
@@ -2849,7 +2924,8 @@
       "warehouse",
       "cost_center",
       "project",
-      "delivery_date"
+      "delivery_date",
+      "branch"
     ],
     "child": true,
     "company_scoped": false,
@@ -2859,7 +2935,8 @@
       "uom": "UOM",
       "warehouse": "Warehouse",
       "cost_center": "Cost Center",
-      "project": "Project"
+      "project": "Project",
+      "branch": "Branch"
     },
     "parents": [
       [
@@ -2893,7 +2970,8 @@
       "wh",
       "cost_ctr",
       "proj",
-      "delivery_dt"
+      "delivery_dt",
+      "branch"
     ],
     "reference_originals_column": "raw_refs"
   },
@@ -2926,7 +3004,8 @@
       "expense_account",
       "cost_center",
       "project",
-      "schedule_date"
+      "schedule_date",
+      "branch"
     ],
     "child": true,
     "company_scoped": false,
@@ -2937,7 +3016,8 @@
       "warehouse": "Warehouse",
       "project": "Project",
       "expense_account": "Account",
-      "cost_center": "Cost Center"
+      "cost_center": "Cost Center",
+      "branch": "Branch"
     },
     "parents": [
       [
@@ -2972,7 +3052,8 @@
       "expn_acct",
       "cost_ctr",
       "proj",
-      "sched_dt"
+      "sched_dt",
+      "branch"
     ],
     "reference_originals_column": "raw_refs"
   },
@@ -3092,7 +3173,10 @@
       "opening_number_of_booked_depreciations",
       "daily_prorata_based",
       "shift_based",
-      "company"
+      "company",
+      "branch",
+      "project",
+      "cost_center"
     ],
     "child": false,
     "company_scoped": true,
@@ -3100,7 +3184,10 @@
       "asset": "Asset",
       "amended_from": "Asset Depreciation Schedule",
       "finance_book": "Finance Book",
-      "company": "Company"
+      "company": "Company",
+      "branch": "Branch",
+      "project": "Project",
+      "cost_center": "Cost Center"
     },
     "parents": [],
     "columns": [
@@ -3121,7 +3208,10 @@
       "open_num_booked_deprs",
       "daily_prorata_based",
       "shift_based",
-      "co"
+      "co",
+      "branch",
+      "proj",
+      "cost_ctr"
     ],
     "reference_originals_column": "raw_refs"
   },
@@ -4010,13 +4100,17 @@
       "applicable_charges",
       "purchase_receipt_item",
       "cost_center",
-      "is_fixed_asset"
+      "is_fixed_asset",
+      "branch",
+      "project"
     ],
     "child": true,
     "company_scoped": false,
     "links": {
       "item_code": "Item",
-      "cost_center": "Cost Center"
+      "cost_center": "Cost Center",
+      "branch": "Branch",
+      "project": "Project"
     },
     "parents": [
       [
@@ -4041,7 +4135,9 @@
       "app_chgs",
       "pur_rcpt_item",
       "cost_ctr",
-      "is_fixed_asset"
+      "is_fixed_asset",
+      "branch",
+      "proj"
     ],
     "reference_originals_column": "raw_refs"
   },
@@ -4336,7 +4432,8 @@
       "expense_account",
       "cost_center",
       "received_qty",
-      "from_warehouse"
+      "from_warehouse",
+      "branch"
     ],
     "child": true,
     "company_scoped": false,
@@ -4350,7 +4447,8 @@
       "project": "Project",
       "expense_account": "Account",
       "cost_center": "Cost Center",
-      "from_warehouse": "Warehouse"
+      "from_warehouse": "Warehouse",
+      "branch": "Branch"
     },
     "parents": [
       [
@@ -4386,7 +4484,8 @@
       "expn_acct",
       "cost_ctr",
       "recv_qty",
-      "from_wh"
+      "from_wh",
+      "branch"
     ],
     "reference_originals_column": "raw_refs"
   },

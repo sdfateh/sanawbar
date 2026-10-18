@@ -1,5 +1,6 @@
 """MariaDB consistent-snapshot reader using a separate, read-only connection."""
 
+import re
 from contextlib import contextmanager
 from decimal import Decimal
 
@@ -7,6 +8,41 @@ import frappe
 from pymysql.constants import FIELD_TYPE
 
 from sanawbar.business_export.engine import SCHEMA, ExportError, references
+
+# Closed set of exported business records that carry accounting dimensions.
+DIMENSION_TABLES = (
+	"GL Entry",
+	"Payment Ledger Entry",
+	"Sales Invoice",
+	"Purchase Invoice",
+	"Payment Entry",
+	"Asset",
+	"Stock Entry",
+	"Delivery Note",
+	"Sales Invoice Item",
+	"Purchase Invoice Item",
+	"Purchase Order Item",
+	"Sales Order Item",
+	"Journal Entry Account",
+	"Material Request Item",
+	"Delivery Note Item",
+	"Purchase Receipt Item",
+	"Stock Entry Detail",
+	"Payment Entry Deduction",
+	"Sales Taxes and Charges",
+	"Purchase Taxes and Charges",
+	"Landed Cost Item",
+	"Stock Reconciliation",
+	"POS Invoice",
+	"POS Invoice Item",
+	"Purchase Order",
+	"Purchase Receipt",
+	"Sales Order",
+	"Payment Request",
+	"Asset Movement Item",
+	"Asset Depreciation Schedule",
+	"Advance Taxes and Charges",
+)
 
 
 @contextmanager
@@ -98,15 +134,10 @@ class Reader:
 	def collect(self, scope):
 		if not self.fields("Company"):
 			raise ExportError("ERPNext business tables are unavailable")
-		# Dynamic configuration is inspected solely to reject unsupported dimensions, never exported.
+		# Configuration is inspected for coverage only, never exported or used to
+		# add destination tables/columns dynamically.
 		self.cursor.execute("SELECT fieldname, document_type FROM `tabAccounting Dimension` ")
-		for field, target in self.cursor.fetchall():
-			if (field, target) not in (
-				("branch", "Branch"),
-				("project", "Project"),
-				("cost_center", "Cost Center"),
-			):
-				raise ExportError("Unsupported accounting dimension")
+		dimensions = list(self.cursor.fetchall())
 		rows = {dt: {} for dt in SCHEMA}
 		all_companies = {r["name"] for r in self.read("Company")}
 		if not scope or not set(scope) <= all_companies:
@@ -183,4 +214,27 @@ class Reader:
 							rows[target][canonical] = item
 							changed = True
 			if not changed:
+				self.validate_dimensions(rows, dimensions)
 				return rows
+
+	def validate_dimensions(self, rows, dimensions):
+		"""Reject unmapped dimension values on exported records, including disabled dimensions."""
+		for field, target in dimensions:
+			if not isinstance(field, str) or not re.fullmatch(r"[a-zA-Z_][a-zA-Z0-9_]*", field):
+				raise ExportError("Unsupported accounting dimension field")
+			for dt in DIMENSION_TABLES:
+				if dt not in SCHEMA or not rows[dt] or field not in self.fields(dt):
+					continue
+				if SCHEMA[dt]["links"].get(field) == target and field in SCHEMA[dt]["fields"]:
+					continue
+				# Inspect existence only; unsupported values never enter the export.
+				ids = list(rows[dt])
+				for offset in range(0, len(ids), 500):
+					batch = ids[offset : offset + 500]
+					self.cursor.execute(
+						f"SELECT name FROM `tab{dt}` WHERE name IN ({', '.join(['%s'] * len(batch))}) "
+						f"AND `{field}` IS NOT NULL AND `{field}` != %s LIMIT 1",
+						(*batch, ""),
+					)
+					if self.cursor.fetchone():
+						raise ExportError(f"Unsupported accounting dimension: {field} ({target}) on {dt}")
