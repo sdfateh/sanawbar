@@ -5,9 +5,10 @@ Use `EmptyState` from `@sanawbar/core` for an empty collection, an empty filtere
 ## Canonical presentation
 
 - Keep the state compact: a dashed boundary, centered sentence-case message, optional short description, and one action when the user can resolve the state.
+- Use `text-content-muted` for the message so small empty-state text meets AA contrast in both themes.
 - Use a semantic icon only when it clarifies a distinct state such as search, permissions, errors, or unavailable content. Do not add decorative icons to ordinary empty collections.
 - Use the shared `Button` for actions. `EmptyState` normalizes its action to the compact `sm` size; empty-collection creation actions use the soft treatment, while recovery actions may use the treatment appropriate to their meaning.
-- Keep actions compact on desktop and at least 44 by 44 CSS pixels on tablet and touch layouts. Every action must remain keyboard operable, visibly focusable, and available without hover.
+- Keep actions compact on desktop and at least 44 by 44 CSS pixels on tablet and touch layouts, including wide landscape tablets detected with a coarse pointer. Every action must remain keyboard operable, visibly focusable, and available without hover.
 - Put the empty state where the missing content would normally appear. A containing `Card` may provide the section surface; do not add large fixed or minimum heights.
 
 ## Copy

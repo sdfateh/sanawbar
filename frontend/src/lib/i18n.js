@@ -25,16 +25,14 @@ export const isRTL = direction === "rtl";
  *
  * Supports positional {0} substitution: __("Open {0}", [name])
  */
-export function __(text, args) {
-	let out = messages[text] || text;
+export function __(text, args, context) {
+	const out = (context && messages[`${text}:${context}`]) || messages[text] || text;
+	if (!args?.length) return out;
 
-	if (args && args.length) {
-		args.forEach((val, i) => {
-			out = out.replace(new RegExp(`\\{${i}\\}`, "g"), val ?? "");
-		});
-	}
-
-	return out;
+	// A callback keeps `$&` and placeholder-like text in user values literal.
+	return out.replace(/\{(\d+)\}/g, (match, index) =>
+		Number(index) < args.length ? String(args[Number(index)] ?? "") : match
+	);
 }
 
 /**

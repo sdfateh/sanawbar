@@ -73,3 +73,16 @@
 		transition-duration: 0.01ms !important;
 	}
 }
+
+/* Large touch tablets need the same targets as narrow screens. Pointer-based
+   sizing also covers landscape tablets whose width exceeds a breakpoint. */
+@media (pointer: coarse) {
+	button,
+	[role="combobox"],
+	[data-sanawbar-control],
+	input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]),
+	select {
+		min-height: 44px;
+		min-width: 44px;
+	}
+}

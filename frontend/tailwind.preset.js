@@ -40,7 +40,7 @@ const LIGHT = {
 
 	text: BRAND.deep,
 	muted: "#55665B",
-	faint: "#7C8D81",
+	faint: "#5D6E62", // Small secondary text retains AA contrast on every light surface.
 
 	accent: BRAND.deep,
 	"accent-hover": "#1B4229",
@@ -85,7 +85,7 @@ const DARK = {
 
 	text: "#E8F2E4",
 	muted: "#9DB3A3",
-	faint: "#6E8677",
+	faint: "#8CA493", // Small secondary text retains AA contrast on every dark surface.
 
 	accent: "#46A475",
 	"accent-hover": "#57B385",

@@ -22,20 +22,45 @@ export default function ConfirmDialog({
 	onCancel,
 }) {
 	const cancelRef = useRef(null);
+	const panelRef = useRef(null);
 	const titleId = useId();
 
 	// Focus an explicit input when supplied; otherwise keep the safe choice focused.
 	useEffect(() => {
-		if (open) (initialFocusRef?.current || cancelRef.current)?.focus();
+		if (!open) return undefined;
+		const previous = document.activeElement;
+		(initialFocusRef?.current || cancelRef.current || panelRef.current)?.focus();
+		return () => {
+			if (previous?.isConnected && typeof previous.focus === "function") previous.focus({ preventScroll: true });
+		};
 	}, [open, initialFocusRef]);
 
 	useEffect(() => {
 		if (!open) return;
-		function onKey(e) {
-			if (e.key === "Escape") onCancel?.();
+		function onKey(event) {
+			if (event.key === "Escape") {
+				event.preventDefault();
+				event.stopPropagation();
+				onCancel?.();
+				return;
+			}
+			if (event.key !== "Tab" || !panelRef.current) return;
+			const targets = [...panelRef.current.querySelectorAll('button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')].filter((element) => element.tabIndex >= 0 && element.getClientRects().length > 0);
+			const first = targets[0];
+			const last = targets[targets.length - 1];
+			if (!first) {
+				event.preventDefault();
+				panelRef.current.focus();
+			} else if (event.shiftKey && (document.activeElement === first || !panelRef.current.contains(document.activeElement))) {
+				event.preventDefault();
+				last.focus();
+			} else if (!event.shiftKey && (document.activeElement === last || !panelRef.current.contains(document.activeElement))) {
+				event.preventDefault();
+				first.focus();
+			}
 		}
-		document.addEventListener("keydown", onKey);
-		return () => document.removeEventListener("keydown", onKey);
+		document.addEventListener("keydown", onKey, true);
+		return () => document.removeEventListener("keydown", onKey, true);
 	}, [open, onCancel]);
 
 	if (!open) return null;
@@ -49,6 +74,8 @@ export default function ConfirmDialog({
 			}}
 		>
 			<div
+				ref={panelRef}
+				tabIndex={-1}
 				role="alertdialog"
 				aria-modal="true"
 				aria-labelledby={titleId}

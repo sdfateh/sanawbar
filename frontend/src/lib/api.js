@@ -1,7 +1,7 @@
 // Shared transport for Frappe SPAs. Domain clients provide their own dotted
 // methods; this module owns only session, CSRF, upload, cache, and logout work.
 
-import { __, getAppConfig } from "./i18n";
+import { __, getAppConfig, lang } from "./i18n.js";
 
 let csrfToken = getAppConfig().csrf_token || "";
 
@@ -15,7 +15,7 @@ export async function call(method, body, options = {}) {
 			"X-Frappe-CSRF-Token": csrfToken,
 		},
 		credentials: "same-origin",
-		body: JSON.stringify(body || {}),
+		body: JSON.stringify({ ...(body || {}), _lang: lang }),
 		signal,
 	});
 	const data = await res.json().catch(() => ({}));
@@ -65,6 +65,7 @@ export async function uploadFile(file, doctype, docname) {
 	body.append("doctype", doctype);
 	body.append("docname", docname);
 	body.append("is_private", "1");
+	body.append("_lang", lang);
 	const res = await fetch("/api/method/upload_file", {
 		method: "POST",
 		headers: { "X-Frappe-CSRF-Token": csrfToken },

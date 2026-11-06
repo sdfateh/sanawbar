@@ -1,9 +1,10 @@
 import { ChevronDown, ExternalLink, LogOut, Monitor, Moon, RotateCw, Sun, UserRound } from "lucide-react";
 import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import { NavLink, Outlet, useBlocker } from "react-router-dom";
+import { Outlet, useBlocker } from "react-router-dom";
 
 import ConfirmDialog from "./ConfirmDialog";
+import PageNavigation from "./PageNavigation";
 import { Button, cx } from "./ui";
 import { clearCache, logout } from "../lib/api";
 import { hasUnsavedChanges, subscribeDirtyGuards } from "../lib/dirtyGuard";
@@ -43,13 +44,11 @@ function ThemeToggle() {
 					onClick={() => setTheme(value)}
 					className={cx(
 						"flex min-h-11 items-center justify-center gap-1.5 rounded-md px-2 text-2xs transition-colors",
-						theme === value
-							? "bg-surface text-content shadow-xs"
-							: "text-content-faint hover:text-content"
+						theme === value ? "bg-surface text-content shadow-xs" : "text-content-faint hover:text-content"
 					)}
 				>
 					<Icon size={14} />
-					<span>{__(label)}</span>
+					<span>{__(label, undefined, "colour-theme")}</span>
 				</button>
 			))}
 		</div>
@@ -108,12 +107,7 @@ function UserAvatar({ user, className }) {
 			)}
 		>
 			{user?.image && !failed ? (
-				<img
-					src={user.image}
-					alt=""
-					className="h-full w-full object-cover"
-					onError={() => setFailed(true)}
-				/>
+				<img src={user.image} alt="" className="h-full w-full object-cover" onError={() => setFailed(true)} />
 			) : initials(user?.full_name) ? (
 				initials(user.full_name)
 			) : (
@@ -129,7 +123,10 @@ function ProfileMenu({ deskHref, clearing, loggingOut, onClearCache, onLanguageC
 	const triggerRef = useRef(null);
 	const panelRef = useRef(null);
 	const panelId = useId();
-	const pos = usePopoverPosition(triggerRef, open, { maxHeight: 520, minWidth: 320 });
+	const pos = usePopoverPosition(triggerRef, open, {
+		maxHeight: 520,
+		minWidth: 320,
+	});
 
 	useEffect(() => {
 		if (!open) return undefined;
@@ -179,10 +176,14 @@ function ProfileMenu({ deskHref, clearing, loggingOut, onClearCache, onLanguageC
 				<span className="hidden max-w-36 truncate text-xs font-medium lg:inline">
 					{user.full_name || user.email || __("Account")}
 				</span>
-				<ChevronDown size={13} className={cx("text-content-faint transition-transform", open && "rotate-180")} />
+				<ChevronDown
+					size={13}
+					className={cx("text-content-faint transition-transform", open && "rotate-180")}
+				/>
 			</button>
 
-			{open && pos &&
+			{open &&
+				pos &&
 				createPortal(
 					<div
 						ref={panelRef}
@@ -373,60 +374,35 @@ export default function AppShell({ brand, links: navLinks = [], deskHref, footer
 				onCancel={discardPrompt?.onCancel}
 			/>
 			<header className="sticky top-0 z-20 border-b border-border bg-surface/85 backdrop-blur-md">
-				<div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-x-3 gap-y-1 px-4 py-1.5 sm:h-14 sm:flex-nowrap sm:px-6 sm:py-0">
+				<div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-x-3 gap-y-1 px-4 py-1.5 sm:px-6 xl:min-h-16 xl:flex-nowrap xl:py-1">
 					<span className="flex shrink-0 items-center gap-2">
 						<span className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent text-accent-fg">
 							{BrandIcon ? <BrandIcon size={15} /> : null}
 						</span>
-						<span className="hidden text-sm font-semibold tracking-tight sm:inline">
-							{__(brand?.label || "Application")}
-						</span>
+						<span className="text-sm font-semibold tracking-tight">{__(brand?.label || "Application")}</span>
 					</span>
 
-					{/* A single-screen page passes no links; an empty bar would just be
-					    a gap next to the wordmark. */}
-					<nav className={cx("order-last min-w-0 basis-full items-center gap-0.5 overflow-x-auto sm:order-none sm:ms-2 sm:flex-1 sm:basis-auto", links.length ? "flex" : "hidden")}>
-						{links.map(({ to, href, label, icon: Icon, end }) =>
-							href ? (
-								<a
-									key={href}
-									href={href}
-									aria-label={__(label)}
-									className="flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-sm text-content-muted transition-colors hover:bg-surface-3 hover:text-content sm:px-3"
-								>
-									<Icon size={15} aria-hidden="true" />
-									<span className="hidden sm:inline">{__(label)}</span>
-								</a>
-							) : (
-							<NavLink
-								key={to}
-								to={to}
-								end={end}
-								aria-label={__(label)}
-								className={({ isActive }) =>
-									cx(
-										"flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-sm transition-colors sm:px-3",
-										isActive
-											? "bg-accent-soft font-medium text-accent-soft-fg"
-											: "text-content-muted hover:bg-surface-3 hover:text-content"
-									)
-								}
-							>
-								<Icon size={15} aria-hidden="true" />
-								<span className="hidden sm:inline">{__(label)}</span>
-							</NavLink>
-							)
-						)}
-					</nav>
+					{links.length > 0 && (
+						<div
+							className={cx(
+								"order-last min-w-0 basis-full",
+								links.length > 4
+									? "xl:order-none xl:flex-1 xl:basis-auto"
+									: "md:order-none md:flex-1 md:basis-auto"
+							)}
+						>
+							<PageNavigation links={links} />
+						</div>
+					)}
 
 					<div className="ms-auto shrink-0">
 						<ProfileMenu
 							deskHref={deskHref}
-						clearing={clearing}
-						loggingOut={loggingOut}
-						onClearCache={onClearCache}
-						onLanguageChange={onLanguageChange}
-						onLogout={onLogout}
+							clearing={clearing}
+							loggingOut={loggingOut}
+							onClearCache={onClearCache}
+							onLanguageChange={onLanguageChange}
+							onLogout={onLogout}
 						/>
 					</div>
 				</div>

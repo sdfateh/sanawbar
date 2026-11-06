@@ -88,3 +88,25 @@ own local rules.
 - Theme tokens and asset namespaces use `sanawbar`, never a consumer name.
 - A breaking shared contract change must update every in-workspace consumer and
   its migration notes in the same change.
+
+## Usability, functionality, and results
+
+Every change must preserve a sharp balance between three equally important
+factors: **usability**, **functionality**, and **results**.
+
+- **Usability:** Make the workflow clear, accessible, and practical for its real
+  users. Keep Arabic/RTL and English/LTR equally usable. Minimize unnecessary
+  steps and explain errors and recovery in the user's terms.
+- **Functionality:** Complete the workflow end to end. Enforce permissions,
+  business rules, data integrity, and controller lifecycles; handle partial
+  success, retries, and failure states. A screen or button alone is not a
+  completed feature.
+- **Results:** Define the concrete user outcome before implementation and verify
+  that the change produces it. Use observable acceptance criteria, such as a
+  feasible schedule, traceable stock movement, approved revision, or reconciled
+  cost. Avoid features that add complexity without a useful outcome.
+
+Review implementation and validation against all three factors together. Do not
+improve one by silently weakening another. When a material tradeoff is necessary,
+make it explicit and choose the smallest complete workflow that delivers the
+intended outcome. Report what was verified and any remaining limits honestly.

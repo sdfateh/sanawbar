@@ -29,17 +29,17 @@ import { popoverStyle, usePopoverPosition } from "../lib/popover";
  */
 const VARIANTS = {
 	field: {
-		base: "h-9 rounded-lg border px-2.5 py-1.5",
+		base: "h-9 max-lg:h-11 rounded-lg border px-2.5 py-1.5",
 		idle: "border-border-strong bg-surface hover:bg-surface-2",
 		open: "border-accent ring-2 ring-accent/20",
 	},
 	cell: {
-		base: "h-8 rounded-md border px-2 py-1",
+		base: "h-8 max-lg:h-11 rounded-md border px-2 py-1",
 		idle: "border-transparent bg-transparent hover:border-border-strong",
 		open: "border-accent bg-surface ring-2 ring-accent/20",
 	},
 	bare: {
-		base: "h-8 rounded-md border px-2.5 py-1",
+		base: "h-8 max-lg:h-11 rounded-md border px-2.5 py-1",
 		idle: "border-transparent bg-transparent hover:bg-surface-2",
 		open: "border-accent bg-surface ring-2 ring-accent/20",
 	},
@@ -203,21 +203,19 @@ const Select = forwardRef(function Select({
 						{list.map((option, i) => {
 							const selected = option.value === (value ?? "");
 							return (
-								<li
-									key={option.value || "__any"}
-									role="option"
-									aria-selected={selected}
-									ref={(el) => {
-										optionRefs.current[i] = el;
-									}}
-								>
+								<li key={option.value || "__any"} role="presentation">
 									<button
 										type="button"
+										role="option"
+										aria-selected={selected}
+										tabIndex={-1}
+										ref={(element) => { optionRefs.current[i] = element; }}
+										onMouseDown={(event) => event.preventDefault()}
 										disabled={option.disabled}
 										onMouseEnter={() => !option.disabled && setActive(i)}
 										onClick={() => choose(option)}
 										className={cx(
-											"flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-start text-sm transition-colors",
+											"flex min-h-11 w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-start text-sm transition-colors",
 											option.disabled
 												? "cursor-not-allowed text-content-faint"
 												: i === active

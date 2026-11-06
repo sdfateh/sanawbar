@@ -1,35 +1,12 @@
 import * as Sentry from "@sentry/browser";
 
+import { scrubEvent } from "./sentryPrivacy.js";
+
 const MAX_TAG_LENGTH = 200;
 let initialized = false;
 
 function cleanString(value, maxLength = MAX_TAG_LENGTH) {
 	return typeof value === "string" ? value.trim().slice(0, maxLength) : "";
-}
-
-function stripQuery(value) {
-	if (typeof value !== "string" || !value) return value;
-	try {
-		const url = new URL(value, window.location.origin);
-		url.search = "";
-		url.hash = "";
-		return url.toString();
-	} catch {
-		return value;
-	}
-}
-
-function scrubEvent(event) {
-	if (event.request) {
-		if (event.request.url) event.request.url = stripQuery(event.request.url);
-		delete event.request.query_string;
-	}
-	for (const breadcrumb of event.breadcrumbs || []) {
-		for (const key of ["url", "from", "to"]) {
-			if (breadcrumb?.data?.[key]) breadcrumb.data[key] = stripQuery(breadcrumb.data[key]);
-		}
-	}
-	return event;
 }
 
 export function initSentry(config = window.sanawbar_config?.sentry) {

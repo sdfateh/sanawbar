@@ -65,6 +65,7 @@ export default function DateTimePicker({
 	const [focusDay, setFocusDay] = useState(() => startOfDay(parseValue(value) || new Date()));
 
 	const boxRef = useRef(null);
+	const triggerRef = useRef(null);
 	const panelRef = useRef(null);
 	const textRef = useRef(null);
 	const gridId = useId();
@@ -193,7 +194,7 @@ export default function DateTimePicker({
 		if (e.key === "Escape") {
 			e.stopPropagation(); // don't also close the surrounding modal
 			setOpen(false);
-			boxRef.current?.focus();
+			triggerRef.current?.focus();
 			return;
 		}
 		if (typing && e.key === "Enter") {
@@ -202,7 +203,7 @@ export default function DateTimePicker({
 			if (parsed) commit(parsed, { close: true });
 			return;
 		}
-		if (typing) return;
+		if (typing || e.target.getAttribute("role") !== "gridcell") return;
 
 		const step = { ArrowLeft: isRTL ? 1 : -1, ArrowRight: isRTL ? -1 : 1, ArrowUp: -7, ArrowDown: 7 }[e.key];
 		if (step) {
@@ -242,9 +243,10 @@ export default function DateTimePicker({
 
 	return (
 		<>
-			<div ref={boxRef} className={cx("relative", className)}>
-				{/* One button covering the whole field: clicking anywhere opens it. */}
+			<div ref={boxRef} className={cx("relative min-w-0", className)}>
+				{/* The date trigger and clear action are separate keyboard controls. */}
 				<button
+					ref={triggerRef}
 					id={id}
 					type="button"
 					disabled={disabled}
@@ -257,28 +259,31 @@ export default function DateTimePicker({
 						size === "compact" ? "h-9 px-2.5 py-1.5 max-lg:h-11" : "min-h-[44px] px-3 py-2",
 						"focus:outline-none focus:ring-2 focus:ring-ring/30 disabled:opacity-60",
 						open ? "border-accent ring-2 ring-ring/30" : "border-border-strong",
-						"bg-surface hover:bg-surface-2"
+						"bg-surface hover:bg-surface-2",
+						allowClear && shown && !disabled && "pe-12"
 					)}
 				>
 					<CalendarDays size={15} className="shrink-0 text-content-faint" />
 					<span className={cx("grow truncate", !shown && "text-content-faint")}>
 						{shown || placeholder || (withTime ? __("Select date and time") : __("Select a date"))}
 					</span>
-					{allowClear && shown && !disabled && (
-						<span
-							role="button"
-							tabIndex={-1}
-							aria-label={__("Clear")}
-							onClick={(e) => {
-								e.stopPropagation();
-								onChange("");
-							}}
-							className="shrink-0 rounded p-0.5 text-content-faint hover:bg-surface-3 hover:text-content"
-						>
-							<X size={14} />
-						</span>
-					)}
 				</button>
+				{allowClear && shown && !disabled && (
+					<button
+						type="button"
+						aria-label={__("Clear", undefined, "clear-control")}
+						onClick={(event) => {
+							event.preventDefault();
+							event.stopPropagation();
+							setOpen(false);
+							onChange("");
+							triggerRef.current?.focus();
+						}}
+						className="absolute inset-y-0 end-0 flex w-11 items-center justify-center rounded-lg text-content-faint hover:bg-surface-3 hover:text-content focus:outline-none focus:ring-2 focus:ring-ring/30"
+					>
+						<X size={14} />
+					</button>
+				)}
 			</div>
 
 			{open &&
@@ -322,7 +327,7 @@ export default function DateTimePicker({
 								icon={isRTL ? ChevronRight : ChevronLeft}
 								onClick={() => setCursor(addMonths(cursor, -1))}
 							/>
-							<span aria-live="polite" className="text-sm font-semibold">
+							<span id={gridId} aria-live="polite" className="text-sm font-semibold">
 								{monthLabel(cursor)}
 							</span>
 							<NavButton
@@ -333,53 +338,58 @@ export default function DateTimePicker({
 						</div>
 
 						<div className="grid grid-cols-7 gap-0.5" role="grid" aria-labelledby={gridId}>
-							{weekdays.map((d) => (
-								<div
-									key={d}
-									role="columnheader"
-									className="pb-1 text-center text-2xs font-medium text-content-faint"
-								>
-									{d}
+							<div role="row" className="contents">
+								{weekdays.map((d) => (
+									<div
+										key={d}
+										role="columnheader"
+										className="pb-1 text-center text-2xs font-medium text-content-faint"
+									>
+										{d}
+									</div>
+								))}
+							</div>
+							{Array.from({ length: Math.ceil(days.length / 7) }, (_, week) => (
+								<div role="row" className="contents" key={week}>
+									{days.slice(week * 7, week * 7 + 7).map((day) => {
+										const otherMonth = day.getMonth() !== cursor.getMonth();
+										const disabledDay = outOfRange(day, minDate, maxDate);
+										const isSelected = isSameDay(day, selected);
+										const isToday = isSameDay(day, new Date());
+										const isFocus = isSameDay(day, focusDay);
+
+										return (
+											<button
+												key={day.toISOString()}
+												type="button"
+												role="gridcell"
+												tabIndex={isFocus ? 0 : -1}
+												disabled={disabledDay}
+												aria-selected={isSelected}
+												aria-current={isToday ? "date" : undefined}
+												onClick={() => pickDay(day)}
+												onFocus={() => setFocusDay(day)}
+												className={cx(
+													"relative h-9 rounded-md text-sm tabular-nums transition-colors",
+													"focus:outline-none focus:ring-2 focus:ring-ring/40",
+													"disabled:cursor-not-allowed disabled:opacity-30",
+													isSelected
+														? "bg-accent font-semibold text-accent-fg"
+														: otherMonth
+															? "text-content-faint hover:bg-surface-2"
+															: "text-content hover:bg-surface-3"
+												)}
+											>
+												{day.getDate()}
+												{/* Today marker survives being selected, where a colour alone would not. */}
+												{isToday && !isSelected && (
+													<span className="absolute inset-x-0 bottom-1 mx-auto h-1 w-1 rounded-full bg-accent" />
+												)}
+											</button>
+										);
+									})}
 								</div>
 							))}
-
-							{days.map((day) => {
-								const otherMonth = day.getMonth() !== cursor.getMonth();
-								const disabledDay = outOfRange(day, minDate, maxDate);
-								const isSelected = isSameDay(day, selected);
-								const isToday = isSameDay(day, new Date());
-								const isFocus = isSameDay(day, focusDay);
-
-								return (
-									<button
-										key={day.toISOString()}
-										type="button"
-										role="gridcell"
-										tabIndex={isFocus ? 0 : -1}
-										disabled={disabledDay}
-										aria-selected={isSelected}
-										aria-current={isToday ? "date" : undefined}
-										onClick={() => pickDay(day)}
-										onFocus={() => setFocusDay(day)}
-										className={cx(
-											"relative h-9 rounded-md text-sm tabular-nums transition-colors",
-											"focus:outline-none focus:ring-2 focus:ring-ring/40",
-											"disabled:cursor-not-allowed disabled:opacity-30",
-											isSelected
-												? "bg-accent font-semibold text-accent-fg"
-												: otherMonth
-													? "text-content-faint hover:bg-surface-2"
-													: "text-content hover:bg-surface-3"
-										)}
-									>
-										{day.getDate()}
-										{/* Today marker survives being selected, where a colour alone would not. */}
-										{isToday && !isSelected && (
-											<span className="absolute inset-x-0 bottom-1 mx-auto h-1 w-1 rounded-full bg-accent" />
-										)}
-									</button>
-								);
-							})}
 						</div>
 
 						{withTime && (

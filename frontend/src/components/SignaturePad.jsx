@@ -145,7 +145,7 @@ export default function SignaturePad({ value, onChange, disabled }) {
 					<input className="sr-only" type="file" accept="image/*" onChange={upload} disabled={disabled} />
 				</label>
 				<Button type="button" size="lg" variant="ghost" icon={Eraser} onClick={clear} disabled={disabled}>
-					{__("Clear")}
+					{__("Clear", undefined, "clear-control")}
 				</Button>
 			</div>
 		</div>

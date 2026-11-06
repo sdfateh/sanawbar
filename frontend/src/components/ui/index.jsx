@@ -1,5 +1,5 @@
-import { Loader2 } from "lucide-react";
-import { cloneElement, forwardRef, isValidElement } from "react";
+import { ChevronDown, Loader2 } from "lucide-react";
+import { cloneElement, forwardRef, isValidElement, useId, useState } from "react";
 
 import { __ } from "../../lib/i18n";
 
@@ -42,6 +42,7 @@ export const Button = forwardRef(function Button(
 	return (
 		<Tag
 			ref={ref}
+			data-sanawbar-control=""
 			className={cx(
 				"inline-flex items-center font-medium transition-colors",
 				"disabled:pointer-events-none disabled:opacity-50",
@@ -91,7 +92,20 @@ export function Badge({ tone = "neutral", className, children, ...props }) {
 
 /* -------------------------------------------------------------------- Card */
 
-export function Card({ title, description, action, padded = true, className, children }) {
+export function Card({
+	title,
+	description,
+	action,
+	padded = true,
+	className,
+	children,
+	collapsible = false,
+	defaultCollapsed = false,
+}) {
+	const contentId = useId();
+	const [collapsed, setCollapsed] = useState(defaultCollapsed);
+	const isCollapsed = collapsible && collapsed;
+
 	return (
 		<section
 			className={cx(
@@ -99,10 +113,31 @@ export function Card({ title, description, action, padded = true, className, chi
 				className
 			)}
 		>
-			{(title || action) && (
-				<header className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
+			{(title || action || collapsible) && (
+				<header className={cx(
+					"flex items-center justify-between gap-3 border-border px-4",
+					collapsible ? "py-1.5" : "py-3",
+					!isCollapsed && "border-b"
+				)}>
 					<div className="min-w-0">
-						{title && <h2 className="truncate text-sm font-semibold">{title}</h2>}
+						{collapsible ? (
+							<h2 className="text-sm font-semibold">
+								<button
+									type="button"
+									aria-expanded={!isCollapsed}
+									aria-controls={contentId}
+									onClick={() => setCollapsed(value => !value)}
+									className="flex min-h-11 min-w-11 w-full items-center gap-2 rounded-md text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+								>
+									<ChevronDown
+										size={16}
+										aria-hidden="true"
+										className={cx("shrink-0 transition-transform", isCollapsed && "-rotate-90 rtl:rotate-90")}
+									/>
+									<span>{title || __("Details")}</span>
+								</button>
+							</h2>
+						) : title && <h2 className="truncate text-sm font-semibold">{title}</h2>}
 						{description && (
 							<p className="mt-0.5 text-xs text-content-muted">{description}</p>
 						)}
@@ -110,7 +145,9 @@ export function Card({ title, description, action, padded = true, className, chi
 					{action && <div className="shrink-0">{action}</div>}
 				</header>
 			)}
-			<div className={padded ? "p-4" : undefined}>{children}</div>
+			<div id={contentId} hidden={isCollapsed} className={padded ? "p-4" : undefined}>
+				{children}
+			</div>
 		</section>
 	);
 }
@@ -133,7 +170,7 @@ export function EmptyState({ icon: Icon, title, description, action }) {
 					<Icon size={18} />
 				</span>
 			)}
-			<p className="text-sm text-content-faint">{title}</p>
+			<p className="text-sm text-content-muted">{title}</p>
 			{description && (
 				<p className="max-w-sm text-xs leading-relaxed text-content-muted">{description}</p>
 			)}
@@ -185,7 +222,7 @@ export function PageHeader({ title, description, children }) {
 					<p className="mt-1 text-sm text-content-muted">{description}</p>
 				)}
 			</div>
-			{children && <div className="flex shrink-0 items-center gap-2">{children}</div>}
+			{children && <div className="flex min-w-0 max-w-full flex-wrap items-center gap-2">{children}</div>}
 		</div>
 	);
 }

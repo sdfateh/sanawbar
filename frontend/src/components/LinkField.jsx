@@ -41,6 +41,9 @@ export default function LinkField({
 	// Human-readable title for the current `value` (e.g. the row's item_name).
 	// Shown in the closed input while `value` stays the stored docname.
 	valueLabel,
+	// Full record titles can opt in; other consumers keep single-line options.
+	wrapLabels = false,
+	"aria-label": ariaLabel,
 	// The consuming app supplies its own permission-aware search endpoint. This
 	// keeps the shared field independent of every domain's DocType allowlist.
 	search,
@@ -66,7 +69,7 @@ export default function LinkField({
 
 	// Placement lives in lib/popover so this and Select flip, clamp and follow the
 	// page identically; see the note there on why a portal makes it necessary.
-	const pos = usePopoverPosition(boxRef, open);
+	const pos = usePopoverPosition(boxRef, open, { minWidth: wrapLabels ? 360 : 220 });
 
 	// What the input shows: the typed query while open, the bound value otherwise.
 	// While open, show what is being typed. When closed, prefer the readable
@@ -158,19 +161,20 @@ export default function LinkField({
 	}
 
 	return (
-		<div ref={boxRef} className="relative">
+		<div ref={boxRef} className={cx("relative", wrapLabels && "min-w-0")}>
 			<div className="relative">
 				<input
 					ref={inputRef}
 					// The chevron/clear affordance is absolutely positioned at
-					// `end-1.5` and is ~23px wide, but the callers' padding is only
-					// 8-10px, so in a narrow column the value ran underneath it.
+					// `end-1.5` and needs a 44px touch target, but callers' padding is only
+					// 8-10px, so reserve room to keep text outside its hit area.
 					// Reserving the space here fixes every LinkField at once rather
 					// than relying on each caller's class.
-					className={cx(className, !disabled && "pe-7")}
+					className={cx(className, !disabled && "pe-14")}
 					value={shown}
 					disabled={disabled}
 					placeholder={placeholder || __("Search…")}
+					aria-label={ariaLabel}
 					role="combobox"
 					aria-expanded={open}
 					aria-controls={listId}
@@ -201,13 +205,13 @@ export default function LinkField({
 						{value && allowClear ? (
 							<button
 								type="button"
-								className="pointer-events-auto rounded p-0.5 hover:bg-surface-3 hover:text-content-muted"
+								className="pointer-events-auto inline-flex h-11 w-11 shrink-0 items-center justify-center rounded hover:bg-surface-3 hover:text-content-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
 							onClick={() => {
 								onChange("");
 								onSelect?.("");
 								inputRef.current?.focus();
 								}}
-								aria-label={__("Clear")}
+								aria-label={__("Clear", undefined, "clear-control")}
 							>
 								<X size={13} />
 							</button>
@@ -242,10 +246,16 @@ export default function LinkField({
 					)}
 
 					{options.map((opt, i) => (
-					<li key={opt.value} id={`${listId}-option-${i}`} ref={(el) => { optionRefs.current[i] = el; }} role="option" aria-selected={i === active}>
+						<li key={opt.value} role="presentation">
 							<button
 								type="button"
-								className={`block w-full rounded-lg px-2.5 py-1.5 text-start text-sm transition-colors ${
+								id={`${listId}-option-${i}`}
+								ref={(element) => { optionRefs.current[i] = element; }}
+								role="option"
+								aria-selected={i === active}
+								tabIndex={-1}
+								onMouseDown={(event) => event.preventDefault()}
+								className={`block min-h-11 w-full rounded-lg px-2.5 py-1.5 text-start text-sm transition-colors ${
 									i === active ? "bg-accent-soft text-accent-soft-fg" : "hover:bg-surface-2"
 								}`}
 								onMouseEnter={() => setActive(i)}
@@ -253,9 +263,9 @@ export default function LinkField({
 							>
 								{/* Lead with the human-readable title (Item -> item_name) and
 								    keep the code as the secondary line. */}
-								<span className="block truncate">{opt.label || opt.value}</span>
+								<span dir={wrapLabels ? "auto" : undefined} className={cx("block", wrapLabels ? "whitespace-normal [overflow-wrap:anywhere]" : "truncate")}>{opt.label || opt.value}</span>
 								{secondaryLine(opt) && (
-									<span className="block truncate text-xs text-content-faint">
+									<span dir={wrapLabels ? "auto" : undefined} className={cx("block text-xs text-content-faint", wrapLabels ? "whitespace-normal [overflow-wrap:anywhere]" : "truncate")}>
 										{secondaryLine(opt)}
 									</span>
 								)}

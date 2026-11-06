@@ -5,7 +5,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 import frappe
-from frappe.tests import IntegrationTestCase
+from frappe.tests import IntegrationTestCase, UnitTestCase
 
 from sanawbar.spa import (
 	get_browser_language,
@@ -83,7 +83,9 @@ class TestSharedPageBootstrap(IntegrationTestCase):
 	@patch("sanawbar.spa.frappe.get_system_settings", return_value=True)
 	def test_sentry_config_requires_product_dsn(self, _get_system_settings):
 		self.assertIsNone(
-			sentry_config(product="cheques", dsn_env="CHEQUES_SENTRY_DSN", release_env="CHEQUES_SENTRY_RELEASE")
+			sentry_config(
+				product="cheques", dsn_env="CHEQUES_SENTRY_DSN", release_env="CHEQUES_SENTRY_RELEASE"
+			)
 		)
 
 	@patch.dict(
@@ -161,3 +163,18 @@ class TestSharedPageBootstrap(IntegrationTestCase):
 			self.assertRaises(frappe.PermissionError),
 		):
 			require_sentry_test_access("cheques")
+
+
+class TestNativeTranslationCatalogue(UnitTestCase):
+	def test_native_frappe_reader_matches_spa_json(self):
+		from pathlib import Path
+
+		from frappe.translate import get_translation_dict_from_file
+
+		from sanawbar.translation_catalog import load_catalogue
+
+		path = Path(__file__).resolve().parents[1] / "translations/ar.json"
+		native = get_translation_dict_from_file(str(path.with_suffix(".csv")), "ar", "sanawbar")
+		self.assertEqual(native, load_catalogue(path))
+		self.assertEqual(native["Open {0}"].format("WO-1"), "فتح WO-1")
+		self.assertEqual(native["Clear:clear-control"], "مسح")

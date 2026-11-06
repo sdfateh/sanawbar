@@ -23,10 +23,13 @@ used. Restart web processes after changing environment variables.
 Each site must opt in through System Settings > Enable Telemetry. Sites without
 that setting, or without the product DSN, receive no browser Sentry config.
 
-Browser events are tagged with `product` and `tenant`. Query strings and URL
-fragments are removed from event request URLs and breadcrumbs, and default PII
-collection is disabled. DSNs are public routing keys and may be embedded in the
-page; Sentry auth tokens and source-map upload tokens must never be included.
+Browser events are tagged with `product` and `tenant`. URL credentials, query
+strings, and fragments are removed from request URLs, breadcrumbs, exception
+messages, stack filenames, and nested event context. Default PII collection is
+disabled. This URL filtering does not redact arbitrary secrets outside URLs;
+callers must not log sensitive payloads. DSNs are public routing keys and may be
+embedded in the page; Sentry auth tokens and source-map upload tokens must never
+be included.
 
 ## Frappe Cloud
 
